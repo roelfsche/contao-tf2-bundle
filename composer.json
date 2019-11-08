@@ -1,5 +1,5 @@
 {
-    "name": "lumturo/contao-tf2",
+    "name": "lumturo/contao-tf2-bundle",
     "type": "contao-bundle",
     "description": "turm-fuer-zwei bundles",
     "license": "LGPL-3.0-or-later",
