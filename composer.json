@@ -28,16 +28,16 @@
         "symfony/phpunit-bridge": "^3.2"
     },
     "extra": {
-        "contao-manager-plugin": "Lumturo\\TF2Bundle\\ContaoManager\\Plugin"
+        "contao-manager-plugin": "Lumturo\\ContaoTF2Bundle\\ContaoManager\\Plugin"
     },
     "autoload": {
         "psr-4": {
-            "Lumturo\\TF2Bundle\\": "src/"
+            "Lumturo\\ContaoTF2Bundle\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Lumturo\\TF2Bundle\\Tests\\": "tests/"
+            "Lumturo\\ContaoTF2Bundle\\Tests\\": "tests/"
         }
     },
     "support": {
