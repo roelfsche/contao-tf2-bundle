@@ -14,7 +14,7 @@ use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\ManagerPlugin\Bundle\BundlePluginInterface;
 use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
 use Contao\ManagerPlugin\Bundle\Parser\ParserInterface;
-use Contao\TF2Bundle\ContaoTF2Bundle;
+use Lumturo\ContaoTF2Bundle\ContaoTF2Bundle;
 
 class Plugin implements BundlePluginInterface
 {
