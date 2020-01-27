@@ -1,0 +1,77 @@
+
+<form id="buchungsformular" action="ajax.php?action=fmd&id=<?= $this->id ?>" method="post">
+	<div class="subcolumns">
+	  
+	  
+	  <div class="c50l">
+	    <div class="subcolumns">
+	      <div class="c50l">
+		      <a href="#" id="btn_booking_from"><img src="/assets/tf2/img/btn_datepicker.png" alt="Datum Anreise" title="Datum Anreise wählen" class="hasDatepicker booking_from btn_datepicker" /></a>
+          <input id="booking_from" class="dotted input_booking_date" type="text" name="booking_from"/><br/>
+		      <label for="booking_from">Anreise</label>
+	      </div>
+	      <div class="c50l">
+		      <a href="#" id="btn_booking_to"><img src="/assets/tf2/img/btn_datepicker.png" alt="Datum Anreise" title="Datum Anreise wählen" class="hasDatepicker booking_to btn_datepicker" /></a>
+          <input id="booking_to" class="dotted input_booking_date" type="text" name="booking_to"/><br/>
+		      <label for="booking_to">Abreise</label>
+	      </div>
+	    </div>
+	    <div class="subcolumns">
+	      <div class="c33l">
+	        <select id="salutation" class="select_salutation" name="salutation"><option value="M">Herr</option><option value="F">Frau</option></select><br/>
+	        <label for="salutation">Anrede</label>
+	      </div>
+	      <div class="c66l">
+		      <input id="firstname" class="dotted input_firstname" type="text" name="firstname"/><br/>
+		      <label for="firstname">Vorname</label>
+	      </div>
+	    </div>
+	    <div>
+	      <input id="name" class="dotted input_full" type="text" name="name"/><br/>
+	      <label for="name">Nachname</label>
+	    </div>
+	    <div>
+	      <input id="address" class="dotted input_full" type="text" name="address"/><br/>
+	      <label for="address">Straße mit Hausnummer</label>
+	    </div>
+	    <div>
+	      <input id="zip" class="dotted input_full" type="text" name="zip"/><br/>
+	      <label for="address">Postleitzahl</label>
+	    </div>
+	    <div>
+	      <input id="city" class="dotted input_full" type="text" name="city"/><br/>
+	      <label for="city">Ort</label>
+	    </div>
+      <br />
+      <a href="#" id="show-calendar-anchor" class="extern" title="Belegungsübersicht anzeigen">Belegungsübersicht</a>
+	  </div> <!-- 50l -->
+	
+	  <div class="c50l">
+	    <div>
+	      <input id="email" class="dotted input_full" type="text" name="email"/><br/>
+	      <label for="email">E-Mail-Adresse</label>
+	    </div>
+	    <div>
+	      <input id="telephone" class="dotted input_full" type="text" name="telephone"/><br/>
+	      <label for="telephone">Telefonnummer</label>
+	    </div>
+	    <div>
+	      <textarea id="notice" class="dotted input_full" name="notice"></textarea><br/>
+	      <label for="telephone">Bemerkungen/Zusatzoptionen</label>
+	    </div>
+	    <div class="subcolumns">
+	      <div class="c50l" style="width: 181px;"><input type="checkbox" class="dotted checkbox_agb" id="agb" name="agb"/> Ich stimme den <a id="agb-link" href="#" rel="agb">AGB</a> zu.</div>
+	      <div class="c50l">
+	        <button id="button-buchung" type="submit">Verbindlich buchen</button>
+	      </div>
+	    </div>
+	  </div><!-- c50l rechte Spalte -->
+	</div>
+</form>
+
+<div id="form-overlay" style="display: none">
+	<center>
+		<h2>Bitte warten ...</h2>
+		<img src="/assets/tf2/img/layout/buchung/ajax-loader.gif" alt="lade..."/>
+	</center>
+</div>

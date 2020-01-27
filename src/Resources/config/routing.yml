@@ -1,0 +1,32 @@
+tf2_get_calendar_dates:
+    path: /calendar/list/{year}
+    defaults:
+#  controller: Lumturo\ContaoTF2Bundle\Controller\CalendarController::list
+        _controller: ContaoTF2Bundle:Calendar:list
+        _scope: frontend
+        _token_check: false
+        year: -1
+    requirements:
+        year: '\d{4}'
+
+tf2_get_booking_details:
+    path: /booking/details/{id}
+    defaults:
+#  controller: Lumturo\ContaoTF2Bundle\Controller\CalendarController::list
+        _controller: ContaoTF2Bundle:Booking:details
+        _scope: frontend
+        _token_check: false
+    requirements:
+        year: '\d+'
+
+tf2_edit_booking_details:
+    path: /booking/edit/{id}
+    methods: POST
+    defaults:
+#  controller: Lumturo\ContaoTF2Bundle\Controller\CalendarController::list
+        _controller: ContaoTF2Bundle:Booking:edit
+        _scope: frontend
+        _token_check: false
+        id: -1
+    requirements:
+        id: '\d+'

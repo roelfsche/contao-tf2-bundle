@@ -13,7 +13,7 @@ namespace Lumturo\ContaoTF2Bundle\Tests;
 use Lumturo\ContaoTF2Bundle\ContaoTF2Bundle;
 use PHPUnit\Framework\TestCase;
 
-class ContaoTf2BundleTest extends TestCase
+class ContaoTF2BundleTest extends TestCase
 {
     public function testCanBeInstantiated()
     {

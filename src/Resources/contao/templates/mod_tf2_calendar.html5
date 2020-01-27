@@ -1,0 +1,13 @@
+<script type="text/javascript">
+  // Daten der gebuchten  Tage
+  var bookedDays = <?= $this->dates ?>;
+  var bookedDaysCSS = <?= $this->dates_css ?>;
+</script>
+
+<!-- Formatierung des Kalenders: middel -->
+<div style="width: 670px; margin: 0px auto">
+		<!--  musste einefügt werden, weil ui darauf die styles bindet und beim overlay mit erzeugt wird -->
+    <div id="ui-datepicker-div" style="border: 0px none; box-shadow: none">
+    	<div id="booking_calendar" class="ui-datepicker-div"></div>
+    </div>
+</div>

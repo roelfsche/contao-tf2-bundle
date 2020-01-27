@@ -1,0 +1,97 @@
+<?php echo $this->doctype; ?>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo $this->language; ?>" lang="<?php echo $this->language; ?>">
+
+<head>
+	<title><?php echo $this->pageTitle; ?> - <?php echo $this->mainTitle; ?></title>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta name="shrink-to-fit=no">
+	<!-- <base href="<?php echo $this->base; ?>">
+	</base> -->
+	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $this->charset; ?>">
+	</meta>
+	<meta name="description" content="<?php echo $this->description; ?>">
+	</meta>
+	<meta name="keywords" content="<?php echo $this->keywords; ?>">
+	</meta>
+	<meta name="author" content="lumturo Softwareentwicklung und Schulungen, Rostock">
+	</meta>
+	<meta name="publisher" content="Turm für Zwei" />
+	<meta name="language" content="deutsch, DE, AT, CH, COM, german" />
+	<meta name="copyright" content="Turm für Zwei" />
+	<meta name="geo.region" content="DE-MV" />
+	<meta name="geo.placename" content="Kuchelmiß" />
+	<meta name="geo.position" content="53.68668;12.34430" />
+	<meta name="ICBM" content="53.68668, 12.34430" />
+	<meta name="MSSmartTagsPreventParsing" content="TRUE" />
+	<meta http-equiv="content-language" content="de" />
+	<meta http-equiv="imagetoolbar" content="no" />
+
+	<link href="/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+
+	<style type="text/css">
+		body {
+			font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+			background-color: #f5f5f5;
+		}
+
+		.calendar .calendar-header {
+			background-color: #f5f5f5;
+			box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+			border: 0;
+		}
+
+		.calendar .calendar-header .year-title {
+			font-size: 18px;
+		}
+
+		.calendar .calendar-header .year-title:not(.year-neighbor):not(.year-neighbor2) {
+			border-bottom: 2px solid #2196f3;
+		}
+
+		.calendar .months-container .month-container {
+			height: 260px;
+			margin-bottom: 25px;
+		}
+
+		.calendar table.month {
+			background-color: white;
+			box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.2);
+			height: 100%;
+		}
+
+		.calendar table.month th.month-title {
+			background-color: #2196F3;
+			color: white;
+			padding: 12px;
+			font-weight: 400;
+		}
+
+		.calendar table.month th.day-header {
+			padding-top: 10px;
+			color: #CDCDCD;
+			font-weight: 400;
+			font-size: 12px;
+		}
+
+		.calendar table.month td.day .day-content {
+			padding: 8px;
+			border-radius: 100%;
+		}
+
+		.calendar table.month td.day {
+			border: 1px solid white;
+		}
+	</style>
+</head>
+
+<body>
+	<h1>Turm für Zwei - Buchungsverwaltung</h1>
+	<div id="booking-management">
+		<!-- form -->
+	</div>
+	<script type="text/javascript" src="/main.js"></script>
+</body>
+
+</html>

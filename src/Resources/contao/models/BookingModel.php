@@ -1,0 +1,319 @@
+<?php
+
+namespace Lumturo\ContaoTF2Bundle\Model;
+
+use Contao\Database;
+use \DateTime;
+
+class BookingModel extends \Model
+{
+    const STATUS_CANCEL = 'C';
+
+    const TYPE_LOCK = 'S';
+
+    /**
+     * Table name
+     * @var string
+     */
+    protected static $strTable = 'tl_booking';
+
+    public static function validatePost(&$arrPost)
+    {
+        $arrErrors = ['booking' => ['details' => []]];
+        $arrPost['id'] = ((isset($arrPost['id'])) ? (int) $arrPost['id'] : 0);
+
+        // booking_from
+        if (!isset($arrPost['booking_from']) || !(int) $arrPost['booking_from']) {
+            $arrErrors['booking']['details']['booking_from'] = 1; //fehlt, oder ragt in einen anderen Aufenthalt
+        } else {
+            $arrPost['booking_from'] = strtotime($arrPost['booking_from']);
+            // normiere auf 12:00:00 --> Unix-TS
+            $arrPost['booking_from'] = mktime(12, 0, 0, date('n', $arrPost['booking_from']), date('j', $arrPost['booking_from']), date('Y', $arrPost['booking_from']));
+            // check, ob es in einen anderen Aufenthalt reinreicht
+            $objCollection = self::getBookingIntercectWithInterval($arrPost['booking_from'], $arrPost['booking_from'], $arrPost['id']);
+            if ($objCollection) {
+                $arrErrors['booking']['details']['booking_from'] = 2; // ragt in andere
+            }
+        }
+
+        // booking_to
+        if (!isset($arrPost['booking_to']) || !(int) $arrPost['booking_to']) {
+            $arrErrors['booking']['details']['booking_to'] = 1; //fehlt
+        } else {
+            $arrPost['booking_to'] = strtotime($arrPost['booking_to']);
+            // normiere auf 11:59:59 --> Unix-TS
+            $arrPost['booking_to'] = mktime(11, 59, 59, date('n', $arrPost['booking_to']), date('j', $arrPost['booking_to']), date('Y', $arrPost['booking_to']));
+            // check, ob es in einen anderen Aufenthalt reinreicht
+            $objCollection = self::getBookingIntercectWithInterval($arrPost['booking_to'], $arrPost['booking_to'], $arrPost['id']);
+            if ($objCollection) {
+                $arrErrors['booking']['details']['booking_to'] = 2; //
+            }
+        }
+
+        // check, ob es keinen Aufenthalt zw. booking_from und booking_to gibt
+        if (!count($arrErrors['booking']['details'])) {
+            $objCollection = self::getBookingIntercectWithInterval($arrPost['booking_from'], $arrPost['booking_to'], $arrPost['id']);
+            if ($objCollection) {
+                $arrErrors['booking']['details']['booking_from'] = 2;
+                $arrErrors['booking']['details']['booking_to'] = 2;
+            }
+        }
+
+        return $arrErrors;
+    }
+    /**
+     * Diese Methode liefert Buchungen zurück, die irgendwie in diesen Zeitraum hereinragen/überlappen.
+     * D.h. 
+     * 1.) deren Ende in dieses Intervall fällt
+     * 2.) deren Anfang in dieses Intervall fällt
+     * 3.) beides
+     * 4.) deren Anfang kleiner und das Ende größer ist
+     * 
+     * @param integer $from_ts
+     * @param integer $to_ts
+     * @return Collection
+     */
+    public static function getBookingIntercectWithInterval($intFromTs, $intToTS, $intId = 0)
+    {
+        $arrOptions = [
+            'order' => 'booking_from ASC',
+            'return' => 'Collection'
+        ];
+
+        if ($intId) {
+            $arrOptions['column'] = [
+                'id != ?',
+                '((booking_from <= ? and booking_to > ?) OR (booking_from >= ? AND booking_from < ?))',
+                'booking_status != ?'
+            ];
+            $arrOptions['value'] = [$intId, $intFromTs, $intFromTs, $intFromTs, $intToTS, self::STATUS_CANCEL];
+        } else {
+            $arrOptions['column'] = [
+                '((booking_from <= ? and booking_to > ?) OR (booking_from >= ? AND booking_from < ?))',
+                'booking_status != ?'
+            ];
+            $arrOptions['value'] = [$intFromTs, $intFromTs, $intFromTs, $intToTS, self::STATUS_CANCEL];
+        }
+        return static::findAll($arrOptions);
+    }
+
+    /**
+     * Liefert Buchungen zu einem Intervall.
+     * Dazu werden die Anreisedaten mit den Intervall verglichen
+     * @param integer $intFromTs
+     * @param integer $intToTs
+     * @return Collection
+     */
+    public function getBookingsByInterval($intFromTs, $intToTs)
+    {
+        $arrOptions = [
+            'column' => [
+                'booking_from >= ? AND booking_from < ? AND booking_status != ?'
+            ],
+            'value' => [$intFromTs, $intToTs, self::STATUS_CANCEL],
+            'order' => 'booking_from ASC',
+            'return' => 'Collection'
+        ];
+        return static::findAll($arrOptions);
+    }
+
+    /**
+     * Diese Methode erstellt ein Array für jeden Tag, den diese Buchung belegt und füllt es mit Daten, die passend für den Kalender sind:
+     * -text = 'Vorname, Nachname, von, bis'
+     * -date = JSON-Date ('20110101T000000')
+     * 
+     * Dem Kalender muss man nämlich jeden Tag einzeln geben.
+     * 
+     */
+    public function getDataForCalendar()
+    {
+        $ret = array();
+        //kreiere zwei DateTime-Objekte und erstelle die Differenz ->  die gibt mir die Tage zurück ;-)
+        $tmp = getdate($this->booking_from);
+        $from = new DateTime();
+        $from->setDate($tmp['year'], $tmp['mon'], $tmp['mday']);
+
+        $tmp = getdate($this->booking_to);
+        $to = new DateTime();
+        $to->setDate($tmp['year'], $tmp['mon'], $tmp['mday']);
+
+        $diff = $to->diff($from);
+
+        //$tage = 1, wenn vom 15.11. zum 16.11, dann brauch ich einen eintrag für den 15. und einen für den 16.
+        $tage = $diff->format('%a');
+
+        # für jeden Tag wird ein Array derarte gebildet
+        # $ts => ('date' => JSONDate, 'text' => 'Heinz Klausmann, ...', 'cls' => 'x-booking-...')
+        # $ts zeigt immer auf den tag 00:00:00 Uhr
+
+
+        $start_ts = $this->booking_from;
+
+        //css-Klasse berechnen
+        $cls = array();
+        if ($this->booking_status() == 'P') {
+            array_push($cls, 'x-booking-payed');
+        } else {
+            //schaue, ob schon ausserhalb der Zahlfrist
+            //$GLOBALS['TL_CONFIG']['default_money_interval']
+            $until_pay = strtotime('+7days', $this->create_ts);
+            if ($until_pay < time()) {
+                array_push($cls, 'x-booking-not-payed');
+            } else {
+                array_push($cls, 'x-booking-booked');
+            }
+        }
+        //Sperrzeit
+        if ($this->booking_type == 'S') {
+            array_push($cls, 'x-booking-lock');
+        }
+        //neue Email?
+        if ($this->new_email == TRUE) {
+            array_push($cls, 'x-booking-new-email');
+        }
+
+        //label
+        $text = $this->booking_type == self::TYPE_LOCK ? 'Sperrzeit' : $this->first_name . ' ' . $this->name;
+
+        //lasse den letzten tag weg (deshalb < $tage)
+        //weil das jetzt so ist
+        for ($i = 0; $i < $tage; $i++) {
+            $ts = $start_ts + $i * 60 * 60 * 24; //für den akt. tag...
+            $ret[$ts] = array(
+                'date' => date('Y-m-d', $ts) . 'T00:00:00',
+                'text' => $text,
+                'cls' => implode(' ', $cls)
+            );
+        }
+
+        return $ret;
+    }
+
+    /**
+     * Diese Methode liefert ein Array zurück, welches pro Tag einen Eintrag enthält.
+     * Der letzte Tag wird weggelassen.
+     * D.h., wenn eine Buchung vom 01.01.2012 - 03.01.2012 geht, wird ein Eintrag für den 01.01. 
+     * und einer für den 02.01.2012 zurück geliefert.
+     * Als Index wird der unix_ts für {datum} 16:00:00 verwendet 
+     *
+     * @return array
+     */
+    public function getDateForFrontendCalendar()
+    {
+        $ret = array();
+        //kreiere zwei DateTime-Objekte und erstelle die Differenz ->  die gibt mir die Tage zurück ;-)
+        $tmp = getdate($this->booking_from);
+        $from = new DateTime();
+        $from->setDate($tmp['year'], $tmp['mon'], $tmp['mday']);
+
+        $tmp = getdate($this->booking_to);
+        $to = new DateTime();
+        $to->setDate($tmp['year'], $tmp['mon'], $tmp['mday']);
+
+        $diff = $to->diff($from);
+
+        //$tage = 1, wenn vom 15.11. zum 16.11, dann brauch ich einen eintrag für den 15. und einen für den 16.
+        $tage = $diff->format('%a');
+
+        # für jeden Tag wird ein Array derarte gebildet
+        # $ts => ('date' => JSONDate, 'text' => 'Heinz Klausmann, ...', 'cls' => 'x-booking-...')
+        # $ts zeigt immer auf den tag 00:00:00 Uhr
+
+
+        $start_ts = $this->booking_from;
+        for ($i = 0; $i < $tage; $i++) {
+            if (!$i) {
+                //der erste geht zum anklicken für die abreise
+                $arr = array(
+                    'css' => 'ui-state-booked-start'
+                );
+            } else {
+                //sonst -> mittendrin
+                $arr = array(
+                    'css' => 'ui-state-booked'
+                );
+            }
+            $ts = $start_ts + $i * 60 * 60 * 24; //für den akt. tag...
+            //j.n.Y = 1.1.2012 und 12.10.2012
+            $ret[date('j.n.Y', $ts)] = $arr;
+        }
+        return $ret;
+    }
+
+    /**
+     * Vorname ' ' Nachname
+     * 
+     * @return string
+     */
+    public function getFullname()
+    {
+        return $this->firstname . ' ' . $this->name;
+    }
+    /**
+     * Detail-String für Kalender
+     * 
+     * @return string
+     */
+    public function getCalendarDetailString()
+    {
+        $strRet = date('d.m.Y', $this->booking_from) . ' - ' . date('d.m.Y', $this->booking_to);
+        return $strRet;
+    }
+
+    public function getDetails()
+    {
+        $arrAll = $this->row();
+        $arrRet = array_intersect_key($arrAll, array_flip(['id', 'salutation', 'firstname', 'name', 'address', 'city', 'zip', 'email', 'telephone', 'booking_from', 'booking_to', 'booking_status', 'booking_type', 'price', 'cleaning_fee', 'notice', 'create_ts']));
+        $arrRet['booking_from'] = date('c', $arrAll['booking_from']);
+        $arrRet['booking_to'] = date('c', $arrAll['booking_to']);
+        $arrRet['create_ts'] = date('c', $arrAll['create_ts']);
+        $arrRet['price'] = (int) $arrAll['price'];
+        $arrRet['cleaning_fee'] = (int) $arrAll['cleaning_fee'];
+
+        return $arrRet;
+    }
+
+    public function getEmails()
+    {
+        return EmailModel::findByBookingId($this->id);
+    }
+
+    /**
+     * Liefert die Details für die Listen-Ansicht im Booking-Tab zurück
+     * @return array
+     */
+    public function getEmailListDetails()
+    {
+        $objCollection = $this->getEmails();
+        if (!$objCollection) {
+            return [];
+        }
+        $arrRet = [];
+        foreach ($objCollection as $objEmail) {
+            $arrRet[] = $objEmail->getListDetails();
+        }
+        return $arrRet;
+    }
+
+    public function getInvoices()
+    {
+        return DocumentModel::findByBookingId($this->id);
+    }
+
+    /**
+     * Liefert die Details für die Listen-Ansicht im Booking-Tab zurück
+     * @return array
+     */
+    public function getInvoicesListDetails()
+    {
+        $objCollection = $this->getEmails();
+        if (!$objCollection) {
+            return [];
+        }
+        $arrRet = [];
+        foreach ($objCollection as $objInvoice) {
+            $arrRet[] = $objInvoice->getListDetails();
+        }
+        return $arrRet;
+    }
+}
