@@ -57,7 +57,7 @@ $GLOBALS['TL_DCA']['tl_booking_config'] = array(
             'inputType' => 'text', 
             'eval' => array(
                 'mandatory' => true, 
-                'rgxp' => 'digit'
+                'rgxp' => digit
             )
         ), 
         'default_cleaning_fee' => array(
@@ -65,7 +65,7 @@ $GLOBALS['TL_DCA']['tl_booking_config'] = array(
             'inputType' => 'text', 
             'eval' => array(
                 'mandatory' => true, 
-                'rgxp' => 'digit'
+                'rgxp' => digit
             )
         ), 
         'default_money_interval' => array(
@@ -73,7 +73,7 @@ $GLOBALS['TL_DCA']['tl_booking_config'] = array(
             'inputType' => 'text', 
             'eval' => array(
                 'mandatory' => true, 
-                'regexp' => 'digit'
+                'regexp' => digit
             )
         ), 
         'email_server' => array(

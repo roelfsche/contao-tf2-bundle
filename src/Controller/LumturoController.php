@@ -3,6 +3,7 @@
 namespace Lumturo\ContaoTF2Bundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class LumturoController extends Controller
 {
@@ -98,5 +99,25 @@ class LumturoController extends Controller
         } while ($old !== $str);
 
         return $str;
+    }
+
+    /**
+     * 
+     */
+    protected function createErrorResponse($strMessage, $strStatus = 'error')
+    {
+        return new JsonResponse([
+            'status' => $strStatus,
+            'message' => $strMessage
+        ]);
+    }
+
+    /**
+     * 
+     */
+    protected function createSuccessMessageResponse($arrPayload, $strStatus = 'ok')
+    {
+        $arrPayload['status'] = $strStatus;
+        return new JsonResponse($arrPayload);
     }
 }

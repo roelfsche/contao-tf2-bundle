@@ -6,7 +6,7 @@ use Lumturo\ContaoTF2Bundle\Model\BookingModel;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;;
 
-class CalendarController extends Controller
+class CalendarController extends LumturoController
 {
     public function listAction($year)
     {
@@ -41,16 +41,5 @@ class CalendarController extends Controller
             'items' => $arrItems
         ]);
         return $objResponse;
-    }
-
-    /**
-     * 
-     */
-    private function createErrorResponse($strMessage, $strStatus = 'error')
-    {
-        return new JsonResponse([
-            'status' => $strStatus,
-            'message' => $strMessage
-        ]);
     }
 }

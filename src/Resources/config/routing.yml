@@ -1,7 +1,7 @@
 tf2_get_calendar_dates:
     path: /calendar/list/{year}
     defaults:
-#  controller: Lumturo\ContaoTF2Bundle\Controller\CalendarController::list
+        #  controller: Lumturo\ContaoTF2Bundle\Controller\CalendarController::list
         _controller: ContaoTF2Bundle:Calendar:list
         _scope: frontend
         _token_check: false
@@ -12,21 +12,113 @@ tf2_get_calendar_dates:
 tf2_get_booking_details:
     path: /booking/details/{id}
     defaults:
-#  controller: Lumturo\ContaoTF2Bundle\Controller\CalendarController::list
         _controller: ContaoTF2Bundle:Booking:details
         _scope: frontend
         _token_check: false
     requirements:
-        year: '\d+'
+        id: '\d+'
 
 tf2_edit_booking_details:
     path: /booking/edit/{id}
     methods: POST
     defaults:
-#  controller: Lumturo\ContaoTF2Bundle\Controller\CalendarController::list
+        #  controller: Lumturo\ContaoTF2Bundle\Controller\CalendarController::list
         _controller: ContaoTF2Bundle:Booking:edit
         _scope: frontend
         _token_check: false
         id: -1
+    requirements:
+        id: '\d+'
+
+tf2_remove_booking:
+    path: /booking/remove/{id}
+    defaults:
+        _controller: ContaoTF2Bundle:Booking:remove
+        _scope: frontend
+        _token_check: false
+    requirements:
+        id: '\d+'
+
+tf2_create_invoice:
+    path: /invoice/create/{id}
+    defaults:
+        _controller: ContaoTF2Bundle:Invoice:create
+        _scope: frontend
+        _token_check: false
+    requirements:
+        id: '\d+'
+
+tf2_list_invoice:
+    path: /invoice/list/{id}
+    defaults:
+        _controller: ContaoTF2Bundle:Invoice:list
+        _scope: frontend
+        _token_check: false
+    requirements:
+        id: '\d+'
+
+tf2_show_invoice:
+    path: /invoice/show/{id}
+    defaults:
+        _controller: ContaoTF2Bundle:Invoice:show
+        _scope: frontend
+        _token_check: false
+    requirements:
+        id: '\d+'
+
+tf2_edit_invoice:
+    path: /invoice/edit/{id}
+    defaults:
+        _controller: ContaoTF2Bundle:Invoice:edit
+        _scope: frontend
+        _token_check: false
+    requirements:
+        id: '\d+'
+
+tf2_read_emails:
+    path: /email/read
+    defaults:
+        _controller: ContaoTF2Bundle:Email:read
+        _scope: frontend
+        _token_check: false
+    requirements:
+
+tf2_list_emails:
+    path: /email/list
+    defaults:
+        _controller: ContaoTF2Bundle:Email:list
+        _scope: frontend
+        _token_check: false
+    requirements:
+
+tf2_get_email_details:
+    path: /email/details/{id}
+    defaults:
+        _controller: ContaoTF2Bundle:Email:details
+        _scope: frontend
+        _token_check: false
+    requirements:
+        id: '\d+'
+
+tf2_get_email_templates:
+    path: /email/templates
+    defaults:
+        _controller: ContaoTF2Bundle:Email:templates
+        _scope: frontend
+        _token_check: false
+
+tf2_send_email:
+    path: /email/send
+    defaults:
+        _controller: ContaoTF2Bundle:Email:send
+        _scope: frontend
+        _token_check: false
+
+tf2_remove_email:
+    path: /email/remove/{id}
+    defaults:
+        _controller: ContaoTF2Bundle:Email:remove
+        _scope: frontend
+        _token_check: false
     requirements:
         id: '\d+'

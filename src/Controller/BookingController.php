@@ -56,10 +56,15 @@ class BookingController extends LumturoController
         $arrErrors = BookingModel::validatePost($arrPost);
         if ($arrPost['id']) {
             $objBooking = BookingModel::findByPk($arrPost['id']);
+            if (!$objBooking) {
+                return $this->createErrorResponse('Buchung nicht gefunden!');
+            }
         } else {
             $objBooking = new BookingModel();
-            $objBooking->create_ts = time();
+            $objBooking->tstamp = time();
         }
+
+
         if (count($arrErrors['booking']['details'])) {
             $objResponse = new JsonResponse([
                 'status' => 'error',
@@ -74,16 +79,18 @@ class BookingController extends LumturoController
         }
 
         // abspeichern
-        foreach (['firstname', 'name', 'email', 'address', 'zip', 'city', 'telephone', 'notice', 'booking_from', 'booking_to', 'booking_status', 'booking_type', 'price', 'cleaning_fee'] as $strKey) {
+        foreach (['firstname', 'name', 'email', 'address', 'zip', 'city', 'telephone', 'notice', 'booking_from', 'booking_to', 'booking_status', 'booking_type'] as $strKey) {
             $objBooking->{$strKey} = $arrPost[$strKey];
         }
-        // $objBooking->mergeRow($arrPost);
+
+        $objBooking->calculatePrice(floatval($GLOBALS['TL_CONFIG']['default_price']), floatval($GLOBALS['TL_CONFIG']['default_cleaning_fee']));
+
         try {
             $objBooking->save();
             $objResponse = new JsonResponse([
                 'status' => 'ok',
                 'booking' => [
-                    'details' => $this->detailsForFrontend($arrPost),
+                    'details' => $objBooking->getDetails(),//$this->detailsForFrontend($arrPost),
                     'emails' => (($objBooking) ? $objBooking->getEmailListDetails() : []),
                     'invoices' => (($objBooking) ? $objBooking->getInvoicesListDetails() : [])
                 ],
@@ -93,6 +100,19 @@ class BookingController extends LumturoController
             $objResponse = $this->createErrorResponse('Fehler beim Speichern');
         }
         return $objResponse;
+    }
+
+
+    public function removeAction($id)
+    {
+        $objBooking = BookingModel::findByPk($id);
+        if (!$objBooking) {
+            return $this->createErrorResponse('Buchung nicht in der Datenbank gefunden!');
+        }
+
+        $objBooking->booking_status = BookingModel::STATUS_CANCEL;
+        $objBooking->save();
+        return $this->createSuccessMessageResponse([]);
     }
 
     private function detailsForFrontend($arrDetails)
@@ -122,16 +142,5 @@ class BookingController extends LumturoController
         } else {
             return date('c', $intTs -  43199);
         }
-    }
-
-    /**
-     * 
-     */
-    private function createErrorResponse($strMessage, $strStatus = 'error')
-    {
-        return new JsonResponse([
-            'status' => $strStatus,
-            'message' => $strMessage
-        ]);
     }
 }

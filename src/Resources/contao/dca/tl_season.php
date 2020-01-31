@@ -59,19 +59,24 @@ $GLOBALS['TL_DCA']['tl_season'] = array(
             'flag' => 12 //absteigende Sortierung
         ), 
         'label' => array(
-            'fields' => array(
-                'title', 
-                'season_from', 
-                'season_to'
-            ), 
+            'fields' => array('title', 'season_from', 'season_to', 'price'),
+            'showColumns' => TRUE,
             'label_callback' => array(
-                'tl_season', 
-                'formatLabel'
-            ),  //Wertformatierung
-            'group_callback' => array(
-                'tl_season', 
-                'formatGroup'
-            ) //Gruppenformatierung
+                'tl_season', 'listView'
+            )
+            // 'fields' => array(
+            //     'title', 
+            //     'season_from', 
+            //     'season_to'
+            // ), 
+            // 'label_callback' => array(
+            //     'tl_season', 
+            //     'formatLabel'
+            // ),  //Wertformatierung
+            // 'group_callback' => array(
+            //     'tl_season', 
+            //     'formatGroup'
+            // ) //Gruppenformatierung
         ),  //            'format' => '%s: %s - %s'
         'global_operations' => array(
             'all' => array(
@@ -172,6 +177,16 @@ class tl_season extends Backend
     public function __construct()
     {
         parent::__construct();
+    }
+
+    /**
+     * saison-Anzeige
+     */
+    public function listView($row, $label, $dc, $args) {
+        $args[1] = date('d.m.Y', $args[1]);
+        $args[2] = date('d.m.Y', $args[2]);
+        $args[3] = number_format($args[3], 2, ',', '.');
+        return $args;
     }
 
     /**

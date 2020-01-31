@@ -117,6 +117,67 @@ class BookingModel extends \Model
         return static::findAll($arrOptions);
     }
 
+    public function calculatePrice($floatDefaultPrice, $floatCleaningFee)
+    {
+        $intSecondsPerDay = 86400;
+
+        # initialisiere das tage-array mit dem default-wert
+        //anzahl der Tage: ende_ts + 1 entspricht abreisetag 12:00:00
+        //da die anreise auch technisch auf 12:00:00 terminiert ist, erhalte ich hier die Anzahl der Tage
+        //ACHTUNG: runde, weil am tag der zeitumstellung (27.10.2012) auf einmal 1.024 tage rauskamen und in der schleife unten
+        //dann 2x der preis addiert wurde (weil 1 < 1.024)
+        $intDayCount = (int) round(($this->booking_to + 1 - $this->booking_from) / $intSecondsPerDay, 0);
+        //baue ein tage-array derart auf: array($ts => $default_price)
+        //$ts für den jeweiligen tag 12:00:00
+        $arrDays = array();
+        for ($i = 0; $i < $intDayCount; $i++) {
+            $arrDays[$this->booking_from + ($i * $intSecondsPerDay)] = $floatDefaultPrice;
+        }
+
+        //selektiere alle saisons, deren anfang kleiner oder gleich dem start_ts ist und deren ende grösser als der start_ts ist
+        //und derern anfang grösser als der start_ts und kleiner als der end_ts ist 
+        $objSeasonsCollection = SeasonModel::findByInterval($this->booking_from, $this->booking->to);
+        #gehe nun die einzelnen Tage durch und schaue, in welche Saison dieser passt; merke mir dafür den Preis und schonmal die cleaning_fee
+
+        if ($objSeasonsCollection) {
+            $objSeasonIterator = $objSeasonsCollection->getIterator();
+            foreach ($arrDays as $intTs => $floatPrice) {
+                foreach ($objSeasonIterator as $objSeason) {
+                    if ($objSeason->season_from <= $intTs && $intTs < $objSeasonsCollection->season_to) {
+                        $arrDays[$intTs] = (float) $objSeason->price;
+                        $objSeasonIterator->rewind();
+                        break;
+                    }
+                }
+            }
+            // foreach ($tage_arr as $ts => $value) {
+            //     foreach ($seasons as $season) {
+            //         if ($season->getSeasonFrom() <= $ts && $ts < $season->getSeasonTo()) {
+            //             $tage_arr[$ts] = $season->getPrice();
+            //             $seasons->rewind(); //wäre nicht nötig, müsste wahrsch. nur einen eintrag zurück, weil foreach dann wieder auf diesem landet (ist ja logisch, dass der nächste tag mind. auchzu dieser saison gehört)
+            //             break;
+            //         }
+            //     }
+            // }
+        }
+
+        # errechne nun den GesamtPreis
+        $floatPrice = 0.00;
+        foreach ($arrDays as $floatDayPrice) {
+            $floatPrice += $floatDayPrice;
+        }
+        $this->price = $floatPrice;
+        $this->cleaning_fee = $floatCleaningFee;
+        // $price = 0.00;
+        // foreach ($tage_arr as $tag_preis) {
+        //     $price += $tag_preis;
+        // }
+
+        // $booking->setCleaningFee($cleaning_fee);
+        // $booking->setPrice($price);
+        // $booking->setPriceDetails($seasons);
+    }
+
     /**
      * Diese Methode erstellt ein Array für jeden Tag, den diese Buchung belegt und füllt es mit Daten, die passend für den Kalender sind:
      * -text = 'Vorname, Nachname, von, bis'
@@ -125,69 +186,69 @@ class BookingModel extends \Model
      * Dem Kalender muss man nämlich jeden Tag einzeln geben.
      * 
      */
-    public function getDataForCalendar()
-    {
-        $ret = array();
-        //kreiere zwei DateTime-Objekte und erstelle die Differenz ->  die gibt mir die Tage zurück ;-)
-        $tmp = getdate($this->booking_from);
-        $from = new DateTime();
-        $from->setDate($tmp['year'], $tmp['mon'], $tmp['mday']);
+    // public function getDataForCalendar()
+    // {
+    //     $ret = array();
+    //     //kreiere zwei DateTime-Objekte und erstelle die Differenz ->  die gibt mir die Tage zurück ;-)
+    //     $tmp = getdate($this->booking_from);
+    //     $from = new DateTime();
+    //     $from->setDate($tmp['year'], $tmp['mon'], $tmp['mday']);
 
-        $tmp = getdate($this->booking_to);
-        $to = new DateTime();
-        $to->setDate($tmp['year'], $tmp['mon'], $tmp['mday']);
+    //     $tmp = getdate($this->booking_to);
+    //     $to = new DateTime();
+    //     $to->setDate($tmp['year'], $tmp['mon'], $tmp['mday']);
 
-        $diff = $to->diff($from);
+    //     $diff = $to->diff($from);
 
-        //$tage = 1, wenn vom 15.11. zum 16.11, dann brauch ich einen eintrag für den 15. und einen für den 16.
-        $tage = $diff->format('%a');
+    //     //$tage = 1, wenn vom 15.11. zum 16.11, dann brauch ich einen eintrag für den 15. und einen für den 16.
+    //     $tage = $diff->format('%a');
 
-        # für jeden Tag wird ein Array derarte gebildet
-        # $ts => ('date' => JSONDate, 'text' => 'Heinz Klausmann, ...', 'cls' => 'x-booking-...')
-        # $ts zeigt immer auf den tag 00:00:00 Uhr
+    //     # für jeden Tag wird ein Array derarte gebildet
+    //     # $ts => ('date' => JSONDate, 'text' => 'Heinz Klausmann, ...', 'cls' => 'x-booking-...')
+    //     # $ts zeigt immer auf den tag 00:00:00 Uhr
 
 
-        $start_ts = $this->booking_from;
+    //     $start_ts = $this->booking_from;
 
-        //css-Klasse berechnen
-        $cls = array();
-        if ($this->booking_status() == 'P') {
-            array_push($cls, 'x-booking-payed');
-        } else {
-            //schaue, ob schon ausserhalb der Zahlfrist
-            //$GLOBALS['TL_CONFIG']['default_money_interval']
-            $until_pay = strtotime('+7days', $this->create_ts);
-            if ($until_pay < time()) {
-                array_push($cls, 'x-booking-not-payed');
-            } else {
-                array_push($cls, 'x-booking-booked');
-            }
-        }
-        //Sperrzeit
-        if ($this->booking_type == 'S') {
-            array_push($cls, 'x-booking-lock');
-        }
-        //neue Email?
-        if ($this->new_email == TRUE) {
-            array_push($cls, 'x-booking-new-email');
-        }
+    //     //css-Klasse berechnen
+    //     $cls = array();
+    //     if ($this->booking_status() == 'P') {
+    //         array_push($cls, 'x-booking-payed');
+    //     } else {
+    //         //schaue, ob schon ausserhalb der Zahlfrist
+    //         //$GLOBALS['TL_CONFIG']['default_money_interval']
+    //         $until_pay = strtotime('+7days', $this->create_ts);
+    //         if ($until_pay < time()) {
+    //             array_push($cls, 'x-booking-not-payed');
+    //         } else {
+    //             array_push($cls, 'x-booking-booked');
+    //         }
+    //     }
+    //     //Sperrzeit
+    //     if ($this->booking_type == 'S') {
+    //         array_push($cls, 'x-booking-lock');
+    //     }
+    //     //neue Email?
+    //     if ($this->new_email == TRUE) {
+    //         array_push($cls, 'x-booking-new-email');
+    //     }
 
-        //label
-        $text = $this->booking_type == self::TYPE_LOCK ? 'Sperrzeit' : $this->first_name . ' ' . $this->name;
+    //     //label
+    //     $text = $this->booking_type == self::TYPE_LOCK ? 'Sperrzeit' : $this->first_name . ' ' . $this->name;
 
-        //lasse den letzten tag weg (deshalb < $tage)
-        //weil das jetzt so ist
-        for ($i = 0; $i < $tage; $i++) {
-            $ts = $start_ts + $i * 60 * 60 * 24; //für den akt. tag...
-            $ret[$ts] = array(
-                'date' => date('Y-m-d', $ts) . 'T00:00:00',
-                'text' => $text,
-                'cls' => implode(' ', $cls)
-            );
-        }
+    //     //lasse den letzten tag weg (deshalb < $tage)
+    //     //weil das jetzt so ist
+    //     for ($i = 0; $i < $tage; $i++) {
+    //         $ts = $start_ts + $i * 60 * 60 * 24; //für den akt. tag...
+    //         $ret[$ts] = array(
+    //             'date' => date('Y-m-d', $ts) . 'T00:00:00',
+    //             'text' => $text,
+    //             'cls' => implode(' ', $cls)
+    //         );
+    //     }
 
-        return $ret;
-    }
+    //     return $ret;
+    // }
 
     /**
      * Diese Methode liefert ein Array zurück, welches pro Tag einen Eintrag enthält.
@@ -267,7 +328,7 @@ class BookingModel extends \Model
         $arrRet['booking_from'] = date('c', $arrAll['booking_from']);
         $arrRet['booking_to'] = date('c', $arrAll['booking_to']);
         $arrRet['create_ts'] = date('c', $arrAll['create_ts']);
-        $arrRet['price'] = (int) $arrAll['price'];
+        $arrRet['price'] = number_format((int) $arrAll['price'], 2, ',', '.');
         $arrRet['cleaning_fee'] = (int) $arrAll['cleaning_fee'];
 
         return $arrRet;
@@ -306,7 +367,7 @@ class BookingModel extends \Model
      */
     public function getInvoicesListDetails()
     {
-        $objCollection = $this->getEmails();
+        $objCollection = $this->getInvoices();
         if (!$objCollection) {
             return [];
         }
@@ -315,5 +376,36 @@ class BookingModel extends \Model
             $arrRet[] = $objInvoice->getListDetails();
         }
         return $arrRet;
+    }
+
+    public function fillTemplate($template, $booking_ident = '')
+    {
+
+        # mache die timestamps "schön"
+        $values = $this->row();
+        $values['salutation'] = ($values['salutation'] == 'M') ? 'geehrter Herr' : 'geehrte Frau';
+        $values['booking_from'] = date('d.m.Y', $values['booking_from']);
+        $values['booking_to'] = date('d.m.Y', $values['booking_to']);
+        $values['whole_price'] = number_format($this->price + $this->cleaning_fee, 2);
+
+        # erstelle den eindeutigen Buchungs-Id-Terminus
+        if (strlen($booking_ident)) {
+            $values['booking_id'] = str_replace('%%booking_id%%', $values['id'], $booking_ident); // '[BNR-TF2-' . $values['id'] . ']';
+        }
+
+        //key-array
+        $search = array_map('Lumturo\ContaoTF2Bundle\Model\BookingModel::makeTemplateKey', array_keys($values));
+
+        return str_replace($search, $values, $template);
+    }
+
+    /**
+     * Formatter für array_map
+     * @param string $key
+     * @return string
+     */
+    public static function makeTemplateKey($key)
+    {
+        return '%%' . $key . '%%';
     }
 }
