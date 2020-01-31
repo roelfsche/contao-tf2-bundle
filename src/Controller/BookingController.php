@@ -50,11 +50,6 @@ class BookingController extends LumturoController
 
     public function newAction(Request $objRequest)
     {
-        // check Login
-        if (($ret = $this->checkLogin()) instanceof Response) {
-            return $ret;
-        }
-
         $arrPost = $objRequest->request->all(); //getContent();
         $arrPost = $this->xss_clean($arrPost);
 
