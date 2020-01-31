@@ -143,7 +143,7 @@ class BookingController extends LumturoController
         }
         $arrPost = $this->xss_clean($arrPost);
 
-        $this->container->get('contao.framework')->initialize();
+        // $this->container->get('contao.framework')->initialize();
 
         // validation + Werte-Korrektur
         $objBooking = NULL;
@@ -173,7 +173,7 @@ class BookingController extends LumturoController
         }
 
         // abspeichern
-        foreach (['firstname', 'name', 'email', 'address', 'zip', 'city', 'telephone', 'notice', 'booking_from', 'booking_to', 'booking_status', 'booking_type'] as $strKey) {
+        foreach (['firstname', 'name', 'email', 'address', 'zip', 'city', 'telephone', 'notice', 'my_notice', 'booking_from', 'booking_to', 'booking_status', 'booking_type'] as $strKey) {
             $objBooking->{$strKey} = $arrPost[$strKey];
         }
 

@@ -388,12 +388,15 @@ class BookingModel extends \Model
     public function getDetails()
     {
         $arrAll = $this->row();
-        $arrRet = array_intersect_key($arrAll, array_flip(['id', 'salutation', 'firstname', 'name', 'address', 'city', 'zip', 'email', 'telephone', 'booking_from', 'booking_to', 'booking_status', 'booking_type', 'price', 'cleaning_fee', 'notice', 'create_ts']));
+        $arrRet = array_intersect_key($arrAll, array_flip(['id', 'salutation', 'firstname', 'name', 'address', 'city', 'zip', 'email', 'telephone', 'booking_from', 'booking_to', 'booking_status', 'booking_type', 'price', 'cleaning_fee', 'notice', 'my_notice', 'create_ts']));
         $arrRet['booking_from'] = date('c', $arrAll['booking_from']);
         $arrRet['booking_to'] = date('c', $arrAll['booking_to']);
         $arrRet['create_ts'] = date('c', $arrAll['create_ts']);
         $arrRet['price'] = number_format((int) $arrAll['price'], 2, ',', '.');
         $arrRet['cleaning_fee'] = (int) $arrAll['cleaning_fee'];
+        if ($arrRet['my_notice'] == NULL) {
+            $arrRet['my_notice'] = '';
+        }
 
         return $arrRet;
     }
