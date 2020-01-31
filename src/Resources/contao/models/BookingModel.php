@@ -9,6 +9,8 @@ class BookingModel extends \Model
 {
     const STATUS_CANCEL = 'C';
 
+    const STATUS_BOOKED = 'B';
+
     const TYPE_LOCK = 'S';
 
     /**
@@ -16,6 +18,68 @@ class BookingModel extends \Model
      * @var string
      */
     protected static $strTable = 'tl_booking';
+
+    public static function validatePostFromFrontend(&$arrPost)
+    {
+        $arrErrors = [];
+        foreach (['booking_from', 'booking_to', 'firstname', 'name', 'email', 'address', 'zip', 'city', 'telephone'] as $strField) {
+            if (!isset($arrPost[$strField])) {
+                $arrErrors[$strField] = 'Bitte angeben.';
+                continue;
+            }
+
+            switch ($strField) {
+                case 'booking_from':
+                    $arrPost['booking_from'] = strtotime($arrPost['booking_from']);
+                    if (!$arrPost['booking_from']) {
+                        $arrErrors[$strField] = 'Bitte korrektes Datum angeben.';
+                        break;
+                    }
+                    $arrPost['booking_from'] = mktime(12, 0, 0, date('n', $arrPost['booking_from']), date('j', $arrPost['booking_from']), date('Y', $arrPost['booking_from']));
+                    // check, ob es in einen anderen Aufenthalt reinreicht
+                    $objCollection = self::getBookingIntercectWithInterval($arrPost['booking_from'], $arrPost['booking_from']);
+                    if ($objCollection) {
+                        $arrErrors['booking_from'] = 'Turm schon belegt'; // ragt in andere
+                        break;
+                    }
+                    break;
+                case 'booking_to':
+                    $arrPost['booking_to'] = strtotime($arrPost['booking_to']);
+                    if (!$arrPost['booking_to']) {
+                        $arrErrors[$strField] = 'Bitte korrektes Datum angeben.';
+                        break;
+                    }
+                    // normiere auf 11:59:59 --> Unix-TS
+                    $arrPost['booking_to'] = mktime(11, 59, 59, date('n', $arrPost['booking_to']), date('j', $arrPost['booking_to']), date('Y', $arrPost['booking_to']));
+                    // check, ob es in einen anderen Aufenthalt reinreicht
+                    $objCollection = self::getBookingIntercectWithInterval($arrPost['booking_to'], $arrPost['booking_to'], $arrPost['id']);
+                    if ($objCollection) {
+                        $arrErrors['booking_to'] = 'Turm schon belegt'; // ragt in andere
+                        break;
+                    }
+                    break;
+                case 'email':
+                    if (!filter_var($arrPost[$strField], FILTER_VALIDATE_EMAIL)) {
+                        $arrErrors[$strField] = 'Bitte valide E-Mail angeben.';
+                    }
+                    break;
+                default:
+                    if (!strlen($arrPost[$strField])) {
+                        $arrErrors[$strField] = 'Bitte angeben.';
+                    }
+            }
+        }
+
+        if (!isset($arrErrors['booking_from']) && !isset($arrErrors['booking_To'])) {
+            // check interval
+            $objCollection = self::getBookingIntercectWithInterval($arrPost['booking_from'], $arrPost['booking_to']);
+            if ($objCollection) {
+                $arrErrors['booking_from'] = 'Turm schon belegt'; // ragt in andere
+                $arrErrors['booking_to'] = 'Turm schon belegt'; // ragt in andere
+            }
+        }
+        return $arrErrors;
+    }
 
     public static function validatePost(&$arrPost)
     {
@@ -73,7 +137,7 @@ class BookingModel extends \Model
      * @param integer $to_ts
      * @return Collection
      */
-    public static function getBookingIntercectWithInterval($intFromTs, $intToTS, $intId = 0)
+    public static function getBookingIntercectWithInterval($intFromTs, $intToTs, $intId = 0)
     {
         $arrOptions = [
             'order' => 'booking_from ASC',
@@ -83,16 +147,16 @@ class BookingModel extends \Model
         if ($intId) {
             $arrOptions['column'] = [
                 'id != ?',
-                '((booking_from <= ? and booking_to > ?) OR (booking_from >= ? AND booking_from < ?))',
+                '((booking_from <= ? and booking_to > ?) OR (booking_from >= ? AND booking_from < ?) OR (booking_from >= ? and booking_to <= ?))',
                 'booking_status != ?'
             ];
-            $arrOptions['value'] = [$intId, $intFromTs, $intFromTs, $intFromTs, $intToTS, self::STATUS_CANCEL];
+            $arrOptions['value'] = [$intId, $intFromTs, $intFromTs, $intFromTs, $intToTs, $intFromTs, $intToTs, self::STATUS_CANCEL];
         } else {
             $arrOptions['column'] = [
-                '((booking_from <= ? and booking_to > ?) OR (booking_from >= ? AND booking_from < ?))',
+                '((booking_from <= ? and booking_to > ?) OR (booking_from >= ? AND booking_from < ?) OR (booking_from >= ? and booking_to <= ?))',
                 'booking_status != ?'
             ];
-            $arrOptions['value'] = [$intFromTs, $intFromTs, $intFromTs, $intToTS, self::STATUS_CANCEL];
+            $arrOptions['value'] = [$intFromTs, $intFromTs, $intFromTs, $intToTs, $intFromTs, $intToTs, self::STATUS_CANCEL];
         }
         return static::findAll($arrOptions);
     }

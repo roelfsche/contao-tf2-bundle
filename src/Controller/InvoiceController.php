@@ -7,12 +7,17 @@ use Lumturo\ContaoTF2Bundle\Model\DocumentModel;
 use Lumturo\ContaoTF2Bundle\TF2Invoice;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-
+use Symfony\Component\HttpFoundation\Response;
 
 class InvoiceController extends LumturoController
 {
     public function listAction($id)
     {
+        // check Login
+        if (($ret = $this->checkLogin()) instanceof Response) {
+            return $ret;
+        }
+
         $objBooking = BookingModel::findByPk($id);
         if (!$objBooking) {
             return $this->createErrorResponse('Buchung nicht in der Datenbank gefunden!');
@@ -24,6 +29,11 @@ class InvoiceController extends LumturoController
 
     public function createAction($id)
     {
+        // check Login
+        if (($ret = $this->checkLogin()) instanceof Response) {
+            return $ret;
+        }
+
         $objBooking = BookingModel::findByPk($id);
         if (!$objBooking) {
             return $this->createErrorResponse('Buchung nicht in der Datenbank gefunden!');
@@ -45,6 +55,11 @@ class InvoiceController extends LumturoController
 
     public function showAction($id)
     {
+        // check Login
+        if (($ret = $this->checkLogin()) instanceof Response) {
+            return $ret;
+        }
+
         // $this->container->get('contao.framework')->initialize();
 
         $objDocument = DocumentModel::findByPk($id);
@@ -60,6 +75,11 @@ class InvoiceController extends LumturoController
 
     public function editAction(Request $objRequest, $id)
     {
+        // check Login
+        if (($ret = $this->checkLogin()) instanceof Response) {
+            return $ret;
+        }
+
         // $this->container->get('contao.framework')->initialize();
 
         $objDocument = DocumentModel::findByPk($id);
@@ -95,7 +115,7 @@ class InvoiceController extends LumturoController
                         if ((int) $objBooking->price != (int) $arrPost['price']) {
                             $objBooking->cleaning_fee = 0;
                         }
-                        $objBooking->price = (int)$arrPost['price'];
+                        $objBooking->price = (int) $arrPost['price'];
                         break;
                 }
             }

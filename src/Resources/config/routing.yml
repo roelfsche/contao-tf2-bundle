@@ -18,6 +18,15 @@ tf2_get_booking_details:
     requirements:
         id: '\d+'
 
+tf2_new_booking:
+    path: /booking/new
+    # methods: POST
+    defaults:
+        #  controller: Lumturo\ContaoTF2Bundle\Controller\CalendarController::list
+        _controller: ContaoTF2Bundle:Booking:new
+        _scope: frontend
+        _token_check: false
+
 tf2_edit_booking_details:
     path: /booking/edit/{id}
     methods: POST

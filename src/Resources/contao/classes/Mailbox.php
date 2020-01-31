@@ -81,12 +81,16 @@ class Mailbox
         $html->charset = 'utf-8';
         $html->encoding = Mime::ENCODING_QUOTEDPRINTABLE;
 
-        $text = new Part($objDbMail->body_text);
-        $text->type = Mime::TYPE_TEXT;
-        $text->charset = 'utf-8';
-        $text->encoding = Mime::ENCODING_QUOTEDPRINTABLE;
+        if ($objDbMail->body_text) {
+            $text = new Part($objDbMail->body_text);
+            $text->type = Mime::TYPE_TEXT;
+            $text->charset = 'utf-8';
+            $text->encoding = Mime::ENCODING_QUOTEDPRINTABLE;
+            $arrParts = [$html, $text];
+        } else {
+            $arrParts = [$html];
+        }
 
-        $arrParts = [$html]; //, $text];
         if ($objInvoice) {
             $objInvoicePart = new Part($objInvoice->doc);
             $objInvoicePart->type = 'application/pdf'; //Mime::TYPE_OCTETSTREAM;

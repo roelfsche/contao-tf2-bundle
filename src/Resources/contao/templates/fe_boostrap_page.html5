@@ -1,32 +1,16 @@
-<?php echo $this->doctype; ?>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo $this->language; ?>" lang="<?php echo $this->language; ?>">
+<!DOCTYPE html>
+<html>
 
 <head>
 	<title><?php echo $this->pageTitle; ?> - <?php echo $this->mainTitle; ?></title>
 	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<meta name="shrink-to-fit=no">
 	<!-- <base href="<?php echo $this->base; ?>">
 	</base> -->
-	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $this->charset; ?>">
-	</meta>
-	<meta name="description" content="<?php echo $this->description; ?>">
-	</meta>
-	<meta name="keywords" content="<?php echo $this->keywords; ?>">
 	</meta>
 	<meta name="author" content="lumturo Softwareentwicklung und Schulungen, Rostock">
 	</meta>
-	<meta name="publisher" content="Turm für Zwei" />
-	<meta name="language" content="deutsch, DE, AT, CH, COM, german" />
-	<meta name="copyright" content="Turm für Zwei" />
-	<meta name="geo.region" content="DE-MV" />
-	<meta name="geo.placename" content="Kuchelmiß" />
-	<meta name="geo.position" content="53.68668;12.34430" />
-	<meta name="ICBM" content="53.68668, 12.34430" />
-	<meta name="MSSmartTagsPreventParsing" content="TRUE" />
-	<meta http-equiv="content-language" content="de" />
-	<meta http-equiv="imagetoolbar" content="no" />
 
 	<link href="/favicon.ico" rel="shortcut icon" type="image/x-icon" />
 
@@ -34,6 +18,14 @@
 		body {
 			font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
 			background-color: #f5f5f5;
+		}
+
+		.mainContainer {
+			min-height: 100vh;
+		}
+
+		.calendar {
+			min-height: 50vh;
 		}
 
 		.calendar .calendar-header {
@@ -87,11 +79,15 @@
 </head>
 
 <body>
-	<h1>Turm für Zwei - Buchungsverwaltung</h1>
-	<div id="booking-management">
-		<!-- form -->
-	</div>
+	<style type="text/css">
+		.calendar .months-container .month-container {
+			height: 200px;
+			margin-bottom: 55px;
+		}
+	</style>
+	<div id="booking-management"> </div>
 	<script type="text/javascript" src="/main.js"></script>
+	<script type="text/javascript" src="/theme.js"></script>
 </body>
 
 </html>

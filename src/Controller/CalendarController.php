@@ -4,14 +4,21 @@ namespace Lumturo\ContaoTF2Bundle\Controller;
 
 use Lumturo\ContaoTF2Bundle\Model\BookingModel;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\JsonResponse;;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
+
+;
 
 class CalendarController extends LumturoController
 {
     public function listAction($year)
     {
+        if (($ret = $this->checkLogin()) instanceof Response) {
+            return $ret;
+        }
+
         $arrItems = [];
-        $this->container->get('contao.framework')->initialize();
+        // $this->container->get('contao.framework')->initialize();
 
         // default, wenn weggelassen: -1
         if ($year == -1) {

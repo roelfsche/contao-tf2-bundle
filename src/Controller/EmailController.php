@@ -7,6 +7,7 @@ use Lumturo\ContaoTF2Bundle\Mailbox;
 use Lumturo\ContaoTF2Bundle\Model\BookingModel;
 use Lumturo\ContaoTF2Bundle\Model\EmailModel;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class EmailController extends LumturoController
 {
@@ -15,6 +16,11 @@ class EmailController extends LumturoController
      */
     public function readAction()
     {
+        // check Login
+        if (($ret = $this->checkLogin()) instanceof Response) {
+            return $ret;
+        }
+
 
         $objMailbox = new Mailbox();
         $objMailbox->loadAndSaveNewEmails();
@@ -26,6 +32,12 @@ class EmailController extends LumturoController
      */
     public function listAction()
     {
+        // check Login
+        if (($ret = $this->checkLogin()) instanceof Response) {
+            return $ret;
+        }
+
+
         $arrEmails = EmailModel::findForFrontend([
             'column' => ['tstamp > ?'],
             'value' => strtotime('-1 year')
@@ -38,6 +50,12 @@ class EmailController extends LumturoController
      */
     public function templatesAction()
     {
+        // check Login
+        if (($ret = $this->checkLogin()) instanceof Response) {
+            return $ret;
+        }
+
+
         //Email-Templates
         $arrTemplates = [
             'reply' => $GLOBALS['TL_CONFIG']['email_template_reply'],
@@ -65,6 +83,11 @@ class EmailController extends LumturoController
      */
     public function detailsAction($id)
     {
+        // check Login
+        if (($ret = $this->checkLogin()) instanceof Response) {
+            return $ret;
+        }
+
         $objEmail = EmailModel::findByPk($id);
         if (!$objEmail) {
             return $this->createErrorResponse('Email nicht in der Datenbank gefunden!');
@@ -128,6 +151,12 @@ class EmailController extends LumturoController
      */
     public function sendAction(Request $objRequest)
     {
+        // check Login
+        if (($ret = $this->checkLogin()) instanceof Response) {
+            return $ret;
+        }
+
+
         $strPost = $objRequest->getContent();
         /* @var $arrPost */
         $arrPost = @json_decode($strPost, true);
@@ -159,6 +188,11 @@ class EmailController extends LumturoController
 
     public function removeAction($id)
     {
+        // check Login
+        if (($ret = $this->checkLogin()) instanceof Response) {
+            return $ret;
+        }
+
         $objEmail = EmailModel::findByPk($id);
         if (!$objEmail) {
             return $this->createErrorResponse('Email nicht in der Datenbank gefunden!');

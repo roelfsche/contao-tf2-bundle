@@ -120,4 +120,12 @@ class LumturoController extends Controller
         $arrPayload['status'] = $strStatus;
         return new JsonResponse($arrPayload);
     }
+
+    protected function checkLogin()
+    {
+        if (!$this->container->get('security.authorization_checker')->isGranted('ROLE_MEMBER')) {
+            return $this->createErrorResponse('Bitte erst anmelden');
+        }
+        return TRUE;
+    }
 }
