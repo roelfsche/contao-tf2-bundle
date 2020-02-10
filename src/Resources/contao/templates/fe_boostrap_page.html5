@@ -75,6 +75,10 @@
 		.calendar table.month td.day {
 			border: 1px solid white;
 		}
+
+		.react-datepicker-component .react-datepicker-input {
+			height: calc(1.5em + .5rem + 2px) !important;
+		}
 	</style>
 </head>
 
