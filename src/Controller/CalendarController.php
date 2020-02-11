@@ -13,6 +13,7 @@ class CalendarController extends LumturoController
 {
     public function listAction($year)
     {
+        // check Login
         if (($ret = $this->checkLogin()) instanceof Response) {
             return $ret;
         }

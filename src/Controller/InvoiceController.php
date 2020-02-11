@@ -8,6 +8,7 @@ use Lumturo\ContaoTF2Bundle\TF2Invoice;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 class InvoiceController extends LumturoController
 {
@@ -70,7 +71,7 @@ class InvoiceController extends LumturoController
         rename($tempname, $tempname .= '.pdf');
         file_put_contents($tempname, $objDocument->doc);
 
-        return new BinaryFileResponse($tempname);
+        return new BinaryFileResponse($tempname, 200, ['Content-type' => 'application/pdf'], TRUE, ResponseHeaderBag::DISPOSITION_INLINE);
     }
 
     public function editAction(Request $objRequest, $id)
