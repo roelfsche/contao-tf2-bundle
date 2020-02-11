@@ -1,5 +1,4 @@
-<?php if (!defined('TL_ROOT')) die('You cannot access this file directly!');
-
+<?php 
 /**
  * Contao Open Source CMS
  * Copyright (C) 2005-2011 Leo Feyer
@@ -40,6 +39,7 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['headlineImage'] = array(
 			'label'                   => &$GLOBALS['TL_LANG']['tl_content']['headlineImage'],
 			'exclude'                 => true,
 			'inputType'               => 'fileTree',
-			'eval'                    => array('fieldType'=>'radio', 'files'=>true, 'mandatory'=>false, 'tl_class'=>'clr')
+			'eval'                    => array('fieldType'=>'radio', 'files'=>true, 'mandatory'=>false, 'tl_class'=>'clr'),
+			'sql'                     => "binary(16) NULL"
 );
 ?>
