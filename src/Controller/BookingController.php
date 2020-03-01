@@ -11,6 +11,13 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Lumturo\ContaoTF2Bundle\TF2Invoice;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Buchungs-Controller
+ * 
+ * Zum Verständnis: Die Reinigungsgebühr wird nur auf den ersten Tag geschlagen.
+ * Insofern ist der Name im CMS leicht verwirrend (Nachlass auf alle anderen Tage)
+ * 
+ */
 class BookingController extends LumturoController
 {
     public function detailsAction($id)

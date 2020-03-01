@@ -29,7 +29,7 @@ class Mailbox
             // 'connection_class' => 'plain',
             // 'connection_config' => [
             'user' => 'buchung@turm-fuer-zwei.de',  // 'rolf.staege@lumturo.net', 
-            'password' => '_48buchung!',
+            'password' => 'dd4-XpLi?J',
             'ssl' => 'SSL'
             // ]
         ),
@@ -41,7 +41,7 @@ class Mailbox
             'connection_class' => 'login',
             'connection_config' => [
                 'username' => 'buchung@turm-fuer-zwei.de',  // 'rolf.staege@lumturo.net', 
-                'password' => '_48buchung!',
+                'password' => 'dd4-XpLi?J',
                 'ssl' => 'SSL'
             ],
             // 'auth' => 'Plain',
