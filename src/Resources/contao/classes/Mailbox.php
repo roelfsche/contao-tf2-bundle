@@ -225,7 +225,7 @@ class Mailbox
                 continue;
             }
 
-            if ($found == 1) {
+            if ($found && $found->numRows == 1) {
                 // lösche sie vom server..
                 if ($this->objMailbox) {
                     $arrDbMail = $found->fetchAllAssoc();
@@ -348,6 +348,7 @@ class Mailbox
             $email->setRow(array(
                 'message_id' => $message_id,
                 'from_address' => $from,
+                'tstamp' => time(),
                 'to_address' => $to,
                 'received_ts' => $received_ts,
                 'subject' => $subject,
