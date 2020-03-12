@@ -46,6 +46,7 @@ class InvoiceController extends LumturoController
         $objInvoice = new TF2Invoice();
 
         $objDocument->setBooking($objBooking);
+        $objDocument->save();
         $objDocument->createInvoice($objInvoice);
         $objDocument->save();
 

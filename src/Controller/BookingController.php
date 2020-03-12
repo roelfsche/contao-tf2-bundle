@@ -114,6 +114,19 @@ class BookingController extends LumturoController
             $objEmail->direction = 'O';
             $objEmail->save();
 
+            // Mail an Agenturen
+            $body = "Sehr geehrte Damen und Herren\n\nin der Zeit von :from bis zum :to ist im Turm für Zwei keine Anreise möglich.\n\nMit freundl. Grüßen\nFalko Weise-Schmidt\nTurm für Zwei";
+            $objMailbox->sendNotifyMail([
+                'subject' => 'Eigenbelegung Turm für Zwei',
+                'text' => strtr($body, array(
+                    ':from' => date('d.m.Y', $objBooking->booking_from),
+                    ':to' => date('d.m.Y', $objBooking->booking_to)
+                )),
+                'from' => 'kontakt@turm-fuer-zwei.de',
+                'to' => ['agenturinfo@turm-fuer-zwei.de', 'kontakt@turm-fuer-zwei.de']
+            ]);
+
+
             $objBooking->new_email = 1;
             $objBooking->save();
         } catch (\Exception $objE) {

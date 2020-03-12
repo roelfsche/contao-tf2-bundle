@@ -16,36 +16,25 @@ use Lumturo\ContaoTF2Bundle\Model\EmailModel;
 class Mailbox
 {
     private $arrConfig = array(
-        // 'imap' => array(
-        //     'host' => 'sslmailpool.ispgateway.de',
-        //     'user' => 'buchung@turm-fuer-zwei.de',  // 'rolf.staege@lumturo.net', 
-        //     'password' => '_48buchung!',
-        //     'ssl' => 'SSL'
-        // ),
         'imap' => array(
             'name' => 'sslmailpool.ispgateway.de',
             'host' => 'sslmailpool.ispgateway.de',
             'port' => 993,
-            // 'connection_class' => 'plain',
-            // 'connection_config' => [
             'user' => 'buchung@turm-fuer-zwei.de',  // 'rolf.staege@lumturo.net', 
-            'password' => 'dd4-XpLi?J',
+            'password' => ':#EDY3rHLp?Ass[',
             'ssl' => 'SSL'
-            // ]
         ),
         'smtp' => array(
             'name' => 'smtprelaypool.ispgateway.de',
             'host' => 'smtprelaypool.ispgateway.de',
             'port' => 465,
-            // 'host' => 'smtprelaypool.ispgateway.de',
             'connection_class' => 'login',
             'connection_config' => [
                 'username' => 'buchung@turm-fuer-zwei.de',  // 'rolf.staege@lumturo.net', 
-                'password' => 'dd4-XpLi?J',
+                'password' => ':#EDY3rHLp?Ass[',
                 'ssl' => 'SSL'
             ],
-            // 'auth' => 'Plain',
-        ) //                    'auth' => 'PLAIN', 
+        )
     );
 
     private $objSmtpOptions = NULL;
@@ -53,6 +42,8 @@ class Mailbox
     private $objDatabase = NULL;
 
     private $objMailbox = NULL;
+
+    private $objTransport = NULL;
 
     public function __construct()
     {
@@ -70,7 +61,9 @@ class Mailbox
     public function sendMail(&$objDbMail, $objInvoice = NULL)
     {
 
-        $objTransport = new Smtp($this->objSmtpOptions);
+        if (!$this->objTransport) {
+            $this->objTransport = new Smtp($this->objSmtpOptions);
+        }
         $objMessage = new Message();
         $objMessage->addTo($objDbMail->getToAddress());
         $objMessage->addFrom($objDbMail->getFromAddress());
@@ -113,8 +106,48 @@ class Mailbox
         else
             $contentTypeHeader->setType('multipart/related');
 
-        $objTransport->send($objMessage);
+        $this->objTransport->send($objMessage);
         // $objDbMail->
+    }
+
+    /**
+     * Diese Methode sendet eine Email anhand der Daten im Array
+     * 
+     */
+    public function sendNotifyMail($arrMail)
+    {
+        if (!$this->objTransport) {
+            $this->objTransport = new Smtp($this->objSmtpOptions);
+        }
+        $objMessage = new Message();
+        $objMessage->addTo($arrMail['to']);
+        $objMessage->addFrom($arrMail['from']);
+        $objMessage->setSubject($arrMail['subject']);
+
+        // $html = new Part($objDbMail->body_html);
+        // $html->type = Mime::TYPE_HTML; //Mime::TYPE_HTML;
+        // $html->charset = 'utf-8';
+        // $html->encoding = Mime::ENCODING_QUOTEDPRINTABLE;
+
+        // if ($objDbMail->body_text) {
+        $text = new Part($arrMail['text']);
+        $text->type = Mime::TYPE_TEXT;
+        $text->charset = 'utf-8';
+        $text->encoding = Mime::ENCODING_QUOTEDPRINTABLE;
+        $arrParts = [$text];
+        // } else {
+        //     $arrParts = [$html];
+        // }
+
+        $objBody = new MimeMessage();
+        $objBody->setParts($arrParts);
+
+        $objMessage->setBody($objBody);
+
+        $contentTypeHeader = $objMessage->getHeaders()->get('Content-Type');
+        $contentTypeHeader->setType('text/plain');
+
+        $this->objTransport->send($objMessage);
     }
 
     /**
