@@ -21,7 +21,7 @@ class Mailbox
             'host' => 'sslin.df.eu',
             'port' => 993,
             'user' => 'buchungsinformation@turm-fuer-zwei.de',  // 'rolf.staege@lumturo.net', 
-            'password' => 'cFh>Zu/5hmLc',
+            'password' => '', // kommt nun aus Contao-Config'cFh>Zu/5hmLc',
             'ssl' => 'SSL'
         ),
         'smtp' => array(
@@ -31,7 +31,7 @@ class Mailbox
             'connection_class' => 'login',
             'connection_config' => [
                 'username' => 'buchungsinformation@turm-fuer-zwei.de',  // 'rolf.staege@lumturo.net', 
-                'password' => 'cFh>Zu/5hmLc',
+                'password' => '', // kommt nun aus contao-config'cFh>Zu/5hmLc',
                 'ssl' => 'SSL'
             ],
         )
@@ -64,8 +64,16 @@ class Mailbox
 
     private $objTransport = NULL;
 
+    /**
+     * pw darf nicht im code stehen --> gab sofort Spam; vermute github ist gehackt...
+     */
     public function __construct()
     {
+        //pw darf nicht im code stehen --> gab sofort Spam; vermute github ist gehackt...
+        $strPassword = html_entity_decode($GLOBALS['TL_CONFIG']['email_password']);
+        $this->arrConfig['smtp']['connection_config']['password'] = $strPassword;
+        $this->arrConfig['imap']['password'] = $strPassword;
+
         $this->objSmtpOptions = new SmtpOptions($this->arrConfig['smtp']);
         $this->objDatabase = Database::getInstance(['dbCharset' => 'utf8mb4']);
     }
@@ -484,4 +492,8 @@ class Mailbox
         }
         return $ret;
     }
+
+    // public function getFromAddress() {
+    //     return $this->arrConfig['imap']['user'];
+    // }
 }

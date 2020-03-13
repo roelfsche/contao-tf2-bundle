@@ -34,156 +34,157 @@ if (!defined('TL_ROOT'))
  * Config 
  */
 $GLOBALS['TL_DCA']['tl_booking_config'] = array(
-    
+
     // Config
     'config' => array(
-        'dataContainer' => 'File', 
-        'closed' => true, 
+        'dataContainer' => 'File',
+        'closed' => true,
         'label' => &$GLOBALS['TL_LANG']['tl_booking_config']['headline']
-    ), 
-    
+    ),
+
     // Palettes
     'palettes' => array(
-        'default' => '{price_legend:show},default_price,default_cleaning_fee,default_money_interval;{email_legend},email_server,email_account,email_ssl,email_password,email_copy_path;{template_legend},email_booking_template_for_invoice,email_booking_template_for_money,email_template_reply,email_booking_template_transaction_received,email_template_remind,email_template_footer,email_template_booking_ident;{html_template_legend},thank_you_template'
-    ), 
-    
+        // 'default' => '{price_legend:show},default_price,default_cleaning_fee,default_money_interval;{email_legend},email_server,email_account,email_ssl,email_password,email_copy_path;{template_legend},email_booking_template_for_invoice,email_booking_template_for_money,email_template_reply,email_booking_template_transaction_received,email_template_remind,email_template_footer,email_template_booking_ident;{html_template_legend},thank_you_template'
+        'default' => '{price_legend:show},default_price,default_cleaning_fee,default_money_interval;{email_legend},email_password;{template_legend},email_booking_template_for_invoice,email_booking_template_for_money,email_template_reply,email_booking_template_transaction_received,email_template_remind,email_template_footer,email_template_booking_ident;{html_template_legend},thank_you_template'
+    ),
+
     // Subpalettes
-    'subpalettes' => array(), 
-    
+    'subpalettes' => array(),
+
     // Fields
     'fields' => array(
         'default_price' => array(
-            'label' => &$GLOBALS['TL_LANG']['tl_booking_config']['default_price'], 
-            'inputType' => 'text', 
+            'label' => &$GLOBALS['TL_LANG']['tl_booking_config']['default_price'],
+            'inputType' => 'text',
             'eval' => array(
-                'mandatory' => true, 
+                'mandatory' => true,
                 'rgxp' => 'digit'
             )
-        ), 
+        ),
         'default_cleaning_fee' => array(
-            'label' => &$GLOBALS['TL_LANG']['tl_booking_config']['default_cleaning_fee'], 
-            'inputType' => 'text', 
+            'label' => &$GLOBALS['TL_LANG']['tl_booking_config']['default_cleaning_fee'],
+            'inputType' => 'text',
             'eval' => array(
-                'mandatory' => true, 
+                'mandatory' => true,
                 'rgxp' => 'digit'
             )
-        ), 
+        ),
         'default_money_interval' => array(
-            'label' => &$GLOBALS['TL_LANG']['tl_booking_config']['default_money_interval'], 
-            'inputType' => 'text', 
+            'label' => &$GLOBALS['TL_LANG']['tl_booking_config']['default_money_interval'],
+            'inputType' => 'text',
             'eval' => array(
-                'mandatory' => true, 
+                'mandatory' => true,
                 'regexp' => 'digit'
             )
-        ), 
-        'email_server' => array(
-            'label' => &$GLOBALS['TL_LANG']['tl_booking_config']['email_server'], 
-            'inputType' => 'text', 
-            'eval' => array(
-                'mandatory' => true
-            )
-        ), 
-        'email_account' => array(
-            'label' => &$GLOBALS['TL_LANG']['tl_booking_config']['email_account'], 
-            'inputType' => 'text', 
-            'eval' => array(
-                'mandatory' => true
-            )
-        ), 
+        ),
+        // 'email_server' => array(
+        //     'label' => &$GLOBALS['TL_LANG']['tl_booking_config']['email_server'], 
+        //     'inputType' => 'text', 
+        //     'eval' => array(
+        //         'mandatory' => true
+        //     )
+        // ), 
+        // 'email_account' => array(
+        //     'label' => &$GLOBALS['TL_LANG']['tl_booking_config']['email_account'], 
+        //     'inputType' => 'text', 
+        //     'eval' => array(
+        //         'mandatory' => true
+        //     )
+        // ), 
         'email_password' => array(
-            'label' => &$GLOBALS['TL_LANG']['tl_booking_config']['email_password'], 
-            'inputType' => 'password', 
+            'label' => &$GLOBALS['TL_LANG']['tl_booking_config']['email_password'],
+            'inputType' => 'text',
+            // 'decodeEntities' => FALSE,
             'eval' => array(
+                'decodeEntities' => FALSE, // greift nicht :-()
                 'mandatory' => true
             )
-        ), 
-        'email_ssl' => array(
-            'label' => &$GLOBALS['TL_LANG']['tl_booking_config']['email_ssl'], 
-            'inputType' => 'checkbox', 
-            'eval' => array(
-                'isBoolean' => TRUE
-            )
-        ), 
-        'email_copy_path' => array(
-            'label' => &$GLOBALS['TL_LANG']['tl_booking_config']['email_copy_path'], 
-            'inputType' => 'text', 
-            'eval' => array(
-                'mandatory' => FALSE
-            )
-        ), 
+        ),
+        // 'email_ssl' => array(
+        //     'label' => &$GLOBALS['TL_LANG']['tl_booking_config']['email_ssl'], 
+        //     'inputType' => 'checkbox', 
+        //     'eval' => array(
+        //         'isBoolean' => TRUE
+        //     )
+        // ), 
+        // 'email_copy_path' => array(
+        //     'label' => &$GLOBALS['TL_LANG']['tl_booking_config']['email_copy_path'], 
+        //     'inputType' => 'text', 
+        //     'eval' => array(
+        //         'mandatory' => FALSE
+        //     )
+        // ), 
         'email_booking_template_for_invoice' => array(
-            'label' => &$GLOBALS['TL_LANG']['tl_booking_config']['email_booking_template_for_invoice'], 
-            'inputType' => 'textarea', 
+            'label' => &$GLOBALS['TL_LANG']['tl_booking_config']['email_booking_template_for_invoice'],
+            'inputType' => 'textarea',
             'eval' => array(
-                'mandatory' => TRUE, 
+                'mandatory' => TRUE,
                 'rte' => 'tinyMCE'
             )
-            
-        ), 
+
+        ),
         'email_booking_template_transaction_received' => array(
-            'label' => &$GLOBALS['TL_LANG']['tl_booking_config']['email_booking_template_transaction_received'], 
-            'inputType' => 'textarea', 
+            'label' => &$GLOBALS['TL_LANG']['tl_booking_config']['email_booking_template_transaction_received'],
+            'inputType' => 'textarea',
             'eval' => array(
-                'mandatory' => TRUE, 
+                'mandatory' => TRUE,
                 'rte' => 'tinyMCE'
             )
-            
-        ), 
+
+        ),
         'email_booking_template_for_money' => array(
-            'label' => &$GLOBALS['TL_LANG']['tl_booking_config']['email_booking_template_for_money'], 
-            'inputType' => 'textarea', 
+            'label' => &$GLOBALS['TL_LANG']['tl_booking_config']['email_booking_template_for_money'],
+            'inputType' => 'textarea',
             'eval' => array(
-                'mandatory' => TRUE, 
+                'mandatory' => TRUE,
                 'rte' => 'tinyMCE'
             )
-            
-        ), 
+
+        ),
         'email_template_reply' => array(
-            'label' => &$GLOBALS['TL_LANG']['tl_booking_config']['email_booking_template_reply'], 
-            'inputType' => 'textarea', 
+            'label' => &$GLOBALS['TL_LANG']['tl_booking_config']['email_booking_template_reply'],
+            'inputType' => 'textarea',
             'eval' => array(
-                'mandatory' => TRUE, 
+                'mandatory' => TRUE,
                 'rte' => 'tinyMCE'
             )
-            
-        ), 
+
+        ),
         'email_template_remind' => array(
-            'label' => &$GLOBALS['TL_LANG']['tl_booking_config']['email_booking_template_remind'], 
-            'inputType' => 'textarea', 
+            'label' => &$GLOBALS['TL_LANG']['tl_booking_config']['email_booking_template_remind'],
+            'inputType' => 'textarea',
             'eval' => array(
-                'mandatory' => TRUE, 
+                'mandatory' => TRUE,
                 'rte' => 'tinyMCE'
             )
-            
-        ), 
+
+        ),
         'email_template_footer' => array(
-            'label' => &$GLOBALS['TL_LANG']['tl_booking_config']['email_booking_template_footer'], 
-            'inputType' => 'textarea', 
+            'label' => &$GLOBALS['TL_LANG']['tl_booking_config']['email_booking_template_footer'],
+            'inputType' => 'textarea',
             'eval' => array(
-                'mandatory' => TRUE, 
+                'mandatory' => TRUE,
                 'rte' => 'tinyMCE'
             )
-            
+
         ),
         'email_template_booking_ident' => array(
-            'label' => &$GLOBALS['TL_LANG']['tl_booking_config']['email_template_booking_ident'], 
-            'inputType' => 'text', 
+            'label' => &$GLOBALS['TL_LANG']['tl_booking_config']['email_template_booking_ident'],
+            'inputType' => 'text',
             'eval' => array(
-                'mandatory' => TRUE, 
+                'mandatory' => TRUE,
             )
-            
+
         ),
         'thank_you_template' => array(
-            'label' => &$GLOBALS['TL_LANG']['tl_booking_config']['thank_you_template'], 
-            'inputType' => 'textarea', 
+            'label' => &$GLOBALS['TL_LANG']['tl_booking_config']['thank_you_template'],
+            'inputType' => 'textarea',
             'eval' => array(
-                'mandatory' => TRUE, 
+                'mandatory' => TRUE,
                 'rte' => 'tinyMCE'
             )
-            
+
         ),
-        
+
     )
 );
-
-?>
