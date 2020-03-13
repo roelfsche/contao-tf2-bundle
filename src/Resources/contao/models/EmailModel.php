@@ -41,7 +41,7 @@ class EmailModel extends \Model
 
         $arrPost['body_html'] = $arrPost['body'] . "\r\n" . $arrPost['footer'];
         $arrPost['body_text'] = strip_tags($arrPost['body_html']);
-        $arrPost['from_address'] = 'buchung@turm-fuer-zwei.de';
+        $arrPost['from_address'] = 'buchungsinformation@turm-fuer-zwei.de';
         $arrPost['tstamp'] = time();
         $arrPost['received_ts'] = time();
         $arrPost['direction'] = 'O';

@@ -102,7 +102,7 @@ class BookingController extends LumturoController
                 // 'body_text' => strip_tags($objBooking->fillTemplate($GLOBALS['TL_CONFIG']['email_booking_template_for_invoice']) . $objBooking->fillTemplate($GLOBALS['TL_CONFIG']['email_template_footer'], $GLOBALS['TL_CONFIG']['email_template_booking_ident'])),
                 'subject' => 'Buchungsbestätigung vom Turm für zwei',
                 'to_address' => $objBooking->email,
-                'from_address' => 'buchung@turm-fuer-zwei.de',
+                'from_address' => 'buchungsinformation@turm-fuer-zwei.de',
                 'booking_id' => $objBooking->id,
                 'received_ts' => time(), // naja... , wird aber im Frontend angezeigt..
             ]);
