@@ -17,24 +17,43 @@ class Mailbox
 {
     private $arrConfig = array(
         'imap' => array(
-            'name' => 'sslmailpool.ispgateway.de',
-            'host' => 'sslmailpool.ispgateway.de',
+            'name' => 'sslin.df.eu',
+            'host' => 'sslin.df.eu',
             'port' => 993,
-            'user' => 'buchung@turm-fuer-zwei.de',  // 'rolf.staege@lumturo.net', 
-            'password' => ':#EDY3rHLp?Ass[',
+            'user' => 'buchungsinformation@turm-fuer-zwei.de',  // 'rolf.staege@lumturo.net', 
+            'password' => 'cFh>Zu/5hmLc',
             'ssl' => 'SSL'
         ),
         'smtp' => array(
-            'name' => 'smtprelaypool.ispgateway.de',
-            'host' => 'smtprelaypool.ispgateway.de',
+            'name' => 'sslout.df.eu',
+            'host' => 'sslout.df.eu',
             'port' => 465,
             'connection_class' => 'login',
             'connection_config' => [
-                'username' => 'buchung@turm-fuer-zwei.de',  // 'rolf.staege@lumturo.net', 
-                'password' => ':#EDY3rHLp?Ass[',
+                'username' => 'buchungsinformation@turm-fuer-zwei.de',  // 'rolf.staege@lumturo.net', 
+                'password' => 'cFh>Zu/5hmLc',
                 'ssl' => 'SSL'
             ],
         )
+        // 'imap' => array(
+        //     'name' => 'sslmailpool.ispgateway.de',
+        //     'host' => 'sslmailpool.ispgateway.de',
+        //     'port' => 993,
+        //     'user' => 'buchung@turm-fuer-zwei.de',  // 'rolf.staege@lumturo.net', 
+        //     'password' => ':#EDY3rHLp?Ass[',
+        //     'ssl' => 'SSL'
+        // ),
+        // 'smtp' => array(
+        //     'name' => 'smtprelaypool.ispgateway.de',
+        //     'host' => 'smtprelaypool.ispgateway.de',
+        //     'port' => 465,
+        //     'connection_class' => 'login',
+        //     'connection_config' => [
+        //         'username' => 'buchung@turm-fuer-zwei.de',  // 'rolf.staege@lumturo.net', 
+        //         'password' => ':#EDY3rHLp?Ass[',
+        //         'ssl' => 'SSL'
+        //     ],
+        // )
     );
 
     private $objSmtpOptions = NULL;
