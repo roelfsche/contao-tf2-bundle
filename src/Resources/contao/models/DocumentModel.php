@@ -40,6 +40,7 @@ class DocumentModel extends \Model
         $arrRet['tstamp'] = date('c', $arrRet['tstamp']);
         $arrRet['price'] = (int)$arrRet['price'];
         $arrRet['cleaning_fee'] = (int)$arrRet['cleaning_fee'];
+        $arrRet['sum'] = $arrRet['price'] + $arrRet['cleaning_fee'];
 
         return $arrRet;
     }

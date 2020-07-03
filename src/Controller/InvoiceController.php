@@ -101,7 +101,7 @@ class InvoiceController extends LumturoController
         }
         $arrPost = $this->xss_clean($arrPost);
 
-        foreach (['tstamp', 'price'] as $strKey) {
+        foreach (['tstamp', 'sum'] as $strKey) {
             if (isset($arrPost[$strKey]) && strlen($arrPost[$strKey])) {
                 switch ($strKey) {
                     case 'tstamp':
@@ -111,13 +111,13 @@ class InvoiceController extends LumturoController
                             $objBooking->tstamp = $varValue;
                         }
                         break;
-                    case 'price':
+                    case 'sum':
                         // setze am Booking-Objekt, da unten in ->createInvoice()
                         // dann in Document kopiert wird
-                        if ((int) $objBooking->price != (int) $arrPost['price']) {
+                        if ((int) $objBooking->price != (int) $arrPost['sum']) {
                             $objBooking->cleaning_fee = 0;
                         }
-                        $objBooking->price = (int) $arrPost['price'];
+                        $objBooking->price = (int) $arrPost['sum'];
                         break;
                 }
             }
