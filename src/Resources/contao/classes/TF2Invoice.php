@@ -99,7 +99,7 @@ class TF2Invoice extends Invoice
 // @todo: entweder auch in lang en oder anders zentralisieren        
         $this->Write(0, money_format('%!n', $this->booking->price + $this->booking->cleaning_fee) . ' EUR');
         $this->setFont('helvetica', '', 11);
-        $this->Write(0, "\n(inklusive 7% Mwst = " . number_format((($this->booking->price + $this->booking->cleaning_fee) - ($this->booking->price + $this->booking->cleaning_fee) / 1.07), 2) . ") EUR in Rechnung.\n\n");
+        $this->Write(0, "\n(inklusive 5% Mwst = " . number_format((($this->booking->price + $this->booking->cleaning_fee) - ($this->booking->price + $this->booking->cleaning_fee) / 1.05), 2) . ") EUR in Rechnung.\n\n");
         
         $this->setFont('helvetica', '', 9);
         $ratio = $this->getCellHeightRatio();
