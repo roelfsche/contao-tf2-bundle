@@ -190,7 +190,8 @@ class BookingModel extends \Model
         //da die anreise auch technisch auf 12:00:00 terminiert ist, erhalte ich hier die Anzahl der Tage
         //ACHTUNG: runde, weil am tag der zeitumstellung (27.10.2012) auf einmal 1.024 tage rauskamen und in der schleife unten
         //dann 2x der preis addiert wurde (weil 1 < 1.024)
-        $intDayCount = (int) round(($this->booking_to + 1 - $this->booking_from) / $intSecondsPerDay, 0);
+        // $intDayCount = (int) round(($this->booking_to + 1 - $this->booking_from) / $intSecondsPerDay, 0);
+        $intDayCount = $this->getDayCount();
         //baue ein tage-array derart auf: array($ts => $default_price)
         //$ts für den jeweiligen tag 12:00:00
         $arrDays = array();
@@ -240,6 +241,16 @@ class BookingModel extends \Model
         // $booking->setCleaningFee($cleaning_fee);
         // $booking->setPrice($price);
         // $booking->setPriceDetails($seasons);
+    }
+
+    /**
+     * liefert die Anzahl der Tage zurück
+     * @return integeger
+     */
+    public function getDayCount() {
+        $intSecondsPerDay = 86400;
+        $intDayCount = (int) round(($this->booking_to + 1 - $this->booking_from) / $intSecondsPerDay, 0);
+        return $intDayCount;
     }
 
     /**

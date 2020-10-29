@@ -14,13 +14,13 @@ class Invoice extends \TCPDF
     /**
      * 
      * 
-     * @var Model_Row_Booking
+     * @var BookingModel
      */
     protected $booking = NULL;
 
     /**
      * muss ein gespeichertes Objekt sein, um die id und das REchnungsdatum auszulesen
-     * @var Model_Row_Document
+     * @var DocumentModel
      */
     protected $document = NULL;
 

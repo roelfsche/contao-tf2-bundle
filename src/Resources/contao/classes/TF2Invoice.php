@@ -13,7 +13,6 @@ class TF2Invoice extends Invoice
     public function __construct($orientation = 'P', $unit = 'pt', $format = 'A4', $unicode = true, $encoding = 'UTF-8', $diskcache = false)
     {
         parent::__construct($orientation, $unit, $format, $unicode, $encoding, $diskcache);
-        
 
         // set document information
         $this->SetCreator(PDF_CREATOR);
@@ -21,40 +20,39 @@ class TF2Invoice extends Invoice
         //        $this->SetTitle('Wiro-Exposé zum Objekt ' . $kontierung);
         $this->SetSubject('Rechnung');
         $this->SetKeywords('turm-fuer-zwei, Rechnung');
-        
+
         // remove default header/footer
         $this->setPrintHeader(false);
         $this->setPrintFooter(false);
-        
+
         //set margins
         $this->SetMargins($this->margin_left, $this->margin_top, $this->margin_right);
-        
+
         //set auto page breaks
-        $this->SetAutoPageBreak(TRUE, 0);
-        
+        $this->SetAutoPageBreak(true, 0);
+
         //Zeilenhöhe für Multicell (wird von HTML-Cell usw. verwendet)
         //        $this->setCellHeightRatio(1.3);
-        
 
         //set image scale factor
         $this->setImageScale(PDF_IMAGE_SCALE_RATIO);
     }
 
-    function printAddress()
+    public function printAddress()
     {
         $y = 127;
         $this->setY($y);
-        
+
         $strFontPath = TL_ROOT . '/vendor/lumturo/contao-tf2-bundle/src/Resources/contao/font/opensans';
         $this->setFont('OpenSans', '', 7.5, $strFontPath);
         $this->Write(0, 'Falko Weise-Schmidt · Kastanienstraße 18 · 18292 Ahrenshagen' . "\n");
-        
+
         $this->setY($this->getY() + 15);
         $this->setFont('helvetica', '', 11);
         $this->Write(0, $this->booking->firstname . ' ' . $this->booking->name . "\n");
         $this->Write(0, $this->booking->address . "\n");
         $this->Write(0, $this->booking->zip . ' ' . $this->booking->city . "\n");
-        
+
         //Rechnungsnummer und -datum
         $x1 = 305;
         $x2 = 400;
@@ -69,13 +67,13 @@ class TF2Invoice extends Invoice
         $this->Write(0, date('d.m.Y', $this->document->tstamp) . "\n", '', false, 'R');
     }
 
-    function printBody()
+    public function printBody()
     {
         $this->setY($this->getY() + 20);
         $this->setFont('helvetica', 'b', 13);
         $this->SetTextColor(94, 85, 65);
         $this->Write(0, "RECHNUNG\n");
-        
+
         $this->setY($this->getY() + 20);
         $this->SetTextColor(0, 0, 0);
         $this->setFont('helvetica', '', 11);
@@ -90,17 +88,20 @@ class TF2Invoice extends Invoice
         $this->Write(0, date('d.m.Y', $this->booking->booking_to));
         $this->setFont('helvetica', '', 11);
         $this->Write(0, ",\n\n");
-        $this->Write(0, 'stellen wir Ihnen vorab eine Übernachtung zum Preis von ');
+        if ($this->booking->getDayCount() > 1) {
+            $this->Write(0, 'stellen wir Ihnen vorab Übernachtungen zum Preis von ');
+        } else {
+            $this->Write(0, 'stellen wir Ihnen vorab eine Übernachtung zum Preis von ');
+        }
         $this->setFont('helvetica', 'b', 11);
-        
-        
+
 //        $this->Write(0, money_format($GLOBALS['TL_LANG']['MSC']['money_format'], $this->booking->price + $this->booking->cleaning_fee) . ' EUR');
-// Moneyformat ist nur in de/ definiert
-// @todo: entweder auch in lang en oder anders zentralisieren        
+        // Moneyformat ist nur in de/ definiert
+        // @todo: entweder auch in lang en oder anders zentralisieren
         $this->Write(0, money_format('%!n', $this->booking->price + $this->booking->cleaning_fee) . ' EUR');
         $this->setFont('helvetica', '', 11);
         $this->Write(0, "\n(inklusive 5% Mwst = " . number_format((($this->booking->price + $this->booking->cleaning_fee) - ($this->booking->price + $this->booking->cleaning_fee) / 1.05), 2) . ") EUR in Rechnung.\n\n");
-        
+
         $this->setFont('helvetica', '', 9);
         $ratio = $this->getCellHeightRatio();
         $this->setCellHeightRatio(1.5);
@@ -119,7 +120,7 @@ class TF2Invoice extends Invoice
         $this->setX($this->margin_left + 5);
         $this->Write(0, "Turmübergabe.\n\n");
         $this->setCellHeightRatio($ratio);
-        
+
         $this->setFont('helvetica', '', 11);
         $this->Write(0, 'Wir freuen uns, Sie als Gäste zu begrüßen und wünschen Ihnen eine schöne Zeit im Turm für Zwei.' . "\n\n");
         $this->Write(0, "Vielen Dank für Ihre Buchung\n\n\n\n");
