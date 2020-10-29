@@ -31,7 +31,10 @@ class VoucherController extends LumturoController
             return $ret;
         }
 
-        $arrPost = $objRequest->request->all(); //getContent();
+        $strPost = $objRequest->getContent();
+        /* @var $arrPost */
+        $arrPost = @json_decode($strPost, true);
+        // $arrPost = $objRequest->request->all(); //getContent();
         $arrPost = $this->xss_clean($arrPost);
 
         $objDocument = new DocumentModel();
