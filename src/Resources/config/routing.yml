@@ -66,6 +66,20 @@ tf2_list_invoice:
     requirements:
         id: '\d+'
 
+tf2_list_vouchers:
+    path: /voucher/list
+    defaults:
+        _controller: ContaoTF2Bundle:Voucher:list
+        _scope: frontend
+        _token_check: false
+
+tf2_create_voucher:
+    path: /voucher/create
+    defaults:
+        _controller: ContaoTF2Bundle:Voucher:create
+        _scope: frontend
+        _token_check: false
+
 tf2_show_invoice:
     path: /invoice/show/{id}
     defaults:

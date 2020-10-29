@@ -2,7 +2,6 @@
 
 namespace Lumturo\ContaoTF2Bundle\Model;
 
-use \DateTime;
 use Exception;
 use Lumturo\ContaoTF2Bundle\TF2Invoice;
 
@@ -17,18 +16,18 @@ class DocumentModel extends \Model
     /**
      * @var BookingModel
      */
-    protected $objBooking = NULL;
+    protected $objBooking = null;
 
     public function findByBookingId($intId)
     {
 
         $arrOptions = [
             'column' => [
-                'pid = ?'
+                'pid = ?',
             ],
             'value' => [$intId],
             'order' => 'id DESC',
-            'return' => 'Collection'
+            'return' => 'Collection',
         ];
         return static::findAll($arrOptions);
     }
@@ -38,8 +37,8 @@ class DocumentModel extends \Model
         $arrAll = $this->row();
         $arrRet = array_intersect_key($arrAll, array_flip(['id', 'tstamp', 'price', 'cleaning_fee']));
         $arrRet['tstamp'] = date('c', $arrRet['tstamp']);
-        $arrRet['price'] = (int)$arrRet['price'];
-        $arrRet['cleaning_fee'] = (int)$arrRet['cleaning_fee'];
+        $arrRet['price'] = (int) $arrRet['price'];
+        $arrRet['cleaning_fee'] = (int) $arrRet['cleaning_fee'];
         $arrRet['sum'] = $arrRet['price'] + $arrRet['cleaning_fee'];
 
         return $arrRet;
@@ -64,5 +63,44 @@ class DocumentModel extends \Model
         $objInvoice->create();
 
         $this->doc = $objInvoice->output('', 'S');
+    }
+
+    public function getVoucherListDetails()
+    {
+        $arrAll = $this->row();
+        $arrRet = array_intersect_key($arrAll, array_flip(['id', 'tstamp', 'voucher_id', 'price', 'cleaning_fee']));
+        $arrRet['voucher_id'] = (int) $arrRet['voucher_id'];
+        $arrRet['tstamp'] = date('c', $arrRet['tstamp']);
+        $arrRet['sum'] = $arrRet['price'] + $arrRet['cleaning_fee'];
+        unset($arrRet['price']);
+        unset($arrRet['cleaning_fee']);
+
+        return $arrRet;
+    }
+
+    public static function getVouchers()
+    {
+        $arrOptions = [
+            'column' => [
+                'type = ?',
+            ],
+            'value' => ['VOUCHER'],
+            'order' => 'id DESC',
+            'return' => 'Collection',
+        ];
+        return static::findAll($arrOptions);
+    }
+    public static function getVouchersListDetails()
+    {
+        $objCollection = self::getVouchers();
+        if (!$objCollection) {
+            return [];
+        }
+        $arrRet = [];
+        foreach ($objCollection as $objVoucher) {
+            $arrRet[] = $objVoucher->getVoucherListDetails();
+        }
+        return $arrRet;
+
     }
 }
