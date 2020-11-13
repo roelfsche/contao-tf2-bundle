@@ -168,7 +168,7 @@ class BookingModel extends \Model
      * @param integer $intToTs
      * @return Collection
      */
-    public function getBookingsByInterval($intFromTs, $intToTs)
+    public static function getBookingsByInterval($intFromTs, $intToTs)
     {
         $arrOptions = [
             'column' => [

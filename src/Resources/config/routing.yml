@@ -145,3 +145,23 @@ tf2_remove_email:
         _token_check: false
     requirements:
         id: '\d+'
+
+tf2_statistic_bookingplan:
+    path: /analysis/bookingplan/{from}/{to}
+    defaults:
+        _controller: ContaoTF2Bundle:Analysis:bookingplan
+        _scope: frontend
+        _token_check: false
+    requirements:
+        from: '\d+'
+        to: '\d+'
+
+tf2_statistic_invoice:
+    path: /analysis/invoice/{from}/{to}
+    defaults:
+        _controller: ContaoTF2Bundle:Analysis:invoice
+        _scope: frontend
+        _token_check: false
+    requirements:
+        from: '\d+'
+        to: '\d+'
