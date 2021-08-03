@@ -31,9 +31,14 @@ class CalendarController extends LumturoController
         $objCollection = BookingModel::getBookingsByInterval($intFromTs, $intToTs);
         if ($objCollection) {
             foreach ($objCollection as $objBooking) {
+                // checke auf 23:00:00; kommt vor, wenn Daten in Wintertime nun als summertime dargestellt werden:-(
+                $startDate = date('c', $objBooking->booking_from - 12 * 60 * 60);
+                if (strpos($startDate, 'T23')!==FALSE) {
+                    $startDate = date('c', $objBooking->booking_from - 11 * 60 * 60);
+                }
                 $arrItems[] = [
                     'id' => $objBooking->id,
-                    'startDate' => date('c', $objBooking->booking_from - 12 * 60 * 60),
+                    'startDate' => $startDate,//date('c', $objBooking->booking_from - 12 * 60 * 60),
                     'endDate' => date('c', $objBooking->booking_to - 12 * 60 * 60 + 1),
                     'create_ts' => date('c', $objBooking->create_ts),
                     'name' => $objBooking->getFullname(), //firstname . ' ' . $objBooking->name,
